@@ -4,16 +4,17 @@ class Controller extends CController
 {
     public $layout = '//layouts/main';
 
-    public $menu = array();
-
     public $breadcrumbs = array();
 
-    public $active_page = '';
+    public $pageId = '';
+    public $pageTitle = '';
 
     public function beforeAction($action)
     {
         if (Yii::app()->user->isGuest && $action->id != 'login') {
-            $this->redirect('/auth/login');
+            $this->redirect('/login');
+        } else if (Yii::app()->user->isGuest == false && $action->id == 'login') {
+            $this->redirect('/');
         }
 
         return parent::beforeAction($action);

@@ -8,5 +8,10 @@ class SiteController extends Controller
         $this->render('index');
     }
 
+    public function actionError()
+    {
+        if($error=Yii::app()->errorHandler->error)
+            $this->render('/system/error404', $error);
+    }
 
 }

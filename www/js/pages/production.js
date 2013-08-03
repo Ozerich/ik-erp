@@ -1,0 +1,4 @@
+$(function () {
+    $('#calendar').Calendar();
+
+});

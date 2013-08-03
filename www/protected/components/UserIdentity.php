@@ -7,16 +7,16 @@ class UserIdentity extends CUserIdentity
 
     public function authenticate()
     {
-        $user = User::model()->findByAttributes(array('login' => $this->username));
+        $user = User::model()->findByAttributes(array('email' => $this->username));
 
         if ($user === null || !$user->validatePassword($this->password)) {
             $this->errorCode = self::ERROR_USERNAME_INVALID;
         } else {
             $this->_id = $user->id;
-            $this->username = $user->login;
+            $this->username = $user->email;
             $this->errorCode = self::ERROR_NONE;
 
-            $user->last_visit = date('Y-m-d H:i:s');
+            $user->last_login = date('Y-m-d H:i:s');
             $user->save();
         }
 

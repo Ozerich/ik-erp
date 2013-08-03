@@ -1,0 +1,158 @@
+#page_production {
+
+  aside {
+    width: 218px;
+    float: left;
+
+    .btn-new-order {
+      width: 100%;
+      font-size: 12px;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .calendar-block {
+      margin-top: 10px;
+      background: #fff;
+      height: 241px;
+
+      border: 1px solid #dddddd;
+      border-radius: 2px;
+      overflow: hidden;
+
+      -webkit-box-shadow: 0px 0px 14px rgba(50, 50, 50, 0.75);
+      -moz-box-shadow: 0px 0px 14px rgba(50, 50, 50, 0.75);
+      box-shadow: 0px 0px 14px rgba(50, 50, 50, 0.75);
+
+      .calendar-header {
+        background: #f2f2f2;
+        height: 23px;
+        line-height: 23px;
+        border-top: 1px solid #fafafa;
+        border-bottom: 1px solid #e7e7e7;
+
+        a {
+          margin: 4px 8px;
+          &.arrow-left {
+            float: left;
+          }
+          &.arrow-right {
+            float: right;
+          }
+        }
+        span {
+          text-align: center;
+          font-weight: bold;
+          display: block;
+        }
+      }
+
+      .calendar-table {
+        padding: 5px 8px 5px 7px;
+        table {
+          width: 100%;
+
+          td, th {
+            width: 29px;
+            text-align: center;
+            height: 29px;
+            color: #666666;
+          }
+
+          td {
+            font-size: 11px;
+            height: 26px;
+            line-height: 26px;
+            padding: 1px 1px 1px 0px;
+            span {
+              display: block;
+              height: 100%;
+              border: 1px solid #f1f1f1;
+            }
+
+            cursor: pointer;
+            &:hover {
+              background: #54a1e6;
+              color: #fff;
+              span {
+                border: 1px solid #54a1e6;
+              }
+            }
+
+            &.empty {
+              background: #f7f7f7;
+              cursor: auto;
+              &:hover {
+                background: #f7f7f7;
+              }
+            }
+          }
+
+          th {
+            height: 26px;
+            line-height: 26px;
+            font-size: 8px;
+            background: #f7f7f7;
+            span {
+              display: block;
+              height: 100%;
+              width: 27px;
+              background: #f1f1f1;
+            }
+          }
+
+          tr {
+            td:last-child, th:last-child {
+              width: 27px;
+            }
+          }
+        }
+      }
+    }
+
+    .categories-block {
+      margin-top: 12px;
+      border: 1px solid #d5d5d5;
+      border-bottom: 0;
+      ul {
+        li {
+          height: 29px;
+          line-height: 29px;
+          border-bottom: 1px solid #d5d5d5;
+          a {
+            display: block;
+            height: 100%;
+            padding-left: 13px;
+            color: #333333;
+
+            background-color: #f1f1f1;
+            *background-color: #f1f1f1;
+            background-image: -moz-linear-gradient(top, #fefefe, #f1f1f1);
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#f1f1f1));
+            background-image: -webkit-linear-gradient(top, #fefefe, #f1f1f1);
+            background-image: -o-linear-gradient(top, #fefefe, #f1f1f1);
+            background-image: linear-gradient(to bottom, #fefefe, #f1f1f1);
+            background-repeat: repeat-x;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fefefe', endColorstr='#f1f1f1', GradientType=0);
+            filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+            &:hover {
+              background: #d5d5d5;
+            }
+          }
+        }
+      }
+
+    }
+  }
+
+  #content {
+    margin-left: 236px;
+
+    header {
+      margin-bottom: 13px;
+      .right-buttons {
+        float: right;
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  position: relative;
+  background: url('../img/background.jpg') left top repeat;
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@import "buttons";
+@import "inputs";
+
+@import "error-page";
+
+ul, ol {
+  margin: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+@import "thirdparty/uniform/uniform.css";
+
+body > header {
+  background: #2a6d90;
+  border-top: 1px solid #378fb8;
+  border-bottom: 1px solid #215672;
+  height: 29px;
+  line-height: 29px;
+  font-size: 12px;
+  color: #fff;
+
+  nav {
+    float: left;
+    background: #378fb8;
+    li {
+      float: left;
+      display: block;
+      background: #2a6d90;
+      margin-right: 1px;
+      border-right: 1px solid #215672;
+      a {
+        padding: 0 18px;
+        display: block;
+        background: #2a6d90;
+        color: #fff;
+        &:hover {
+          background: #215672;
+        }
+      }
+    }
+  }
+
+  .right-block {
+    float: right;
+    .logout {
+      display: block;
+      border-left: 1px solid #378fb8;
+      padding: 0 20px 0 10px;
+      float: right;
+      color: #fff;
+      &:hover {
+        background: #215672;
+      }
+      i {
+        margin-right: 5px;
+      }
+    }
+    .user-name {
+      float: right;
+      border-right: 1px solid #2a6d90;
+      padding-right: 15px;
+    }
+  }
+}
+
+.page-container {
+  padding: 15px 20px 30px 20px;
+}
+
+@import "pages/page_production";
