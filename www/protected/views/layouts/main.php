@@ -22,6 +22,7 @@
     <script src="/js/thirdparty/jquery-2.0.3.min.js"></script>
     <script src="/js/thirdparty/bootstrap.min.js"></script>
     <script src="/js/thirdparty/less-1.3.3.min.js"></script>
+    <script src="/js/thirdparty/knockout-2.3.0.js"></script>
 
 
 </head>

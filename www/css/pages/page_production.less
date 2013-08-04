@@ -154,5 +154,194 @@
         float: right;
       }
     }
+
+    article {
+      margin-bottom: 5px;
+      header {
+        margin-bottom: 0;
+        table {
+          border: 1px solid #215672;
+          border-radius: 3px 3px 0 0;
+          border-collapse: separate;
+          td {
+            margin-top: 1px;
+            border-top: 1px solid #378fb8;
+            border-right: 1px solid #215672;
+            border-left: 1px solid #378fb8;
+
+            background: #2a6d90;
+
+            height: 46px;
+            line-height: 46px;
+            padding: 0 15px;
+
+            color: #ffffff;
+
+            &:first-child {
+              border-left: 0;
+            }
+            &:last-child {
+              border-right: 0;
+            }
+
+            &.cell-date {
+              width: 99px;
+              max-width: 99px;
+
+              .btn-hide {
+                display: none;
+              }
+
+              button {
+                float: left;
+                margin-top: 4px;
+              }
+
+              .date {
+                line-height: normal;
+                padding-top: 3px;
+                display: block;
+                margin-left: 42px;
+                text-align: center;
+                font-weight: bold;
+                span {
+                  font-weight: normal;
+                }
+              }
+            }
+
+            &.cell-name {
+              line-height: 12px;
+              width: 236px;
+              max-width: 350px;
+
+              .name {
+                display: block;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+              }
+
+              .progress {
+                margin-top: 3px;
+                margin-bottom: 0;
+                overflow: hidden;
+                height: 14px;
+                width: 100%;
+                .border-radius(3px, 3px, 3px, 3px);
+                .gradient(#fff, #e6e7e7, #fff);
+
+                .progress-value {
+                  border-top: 1px solid #8cc100;
+                  .gradient(#8cc100, #8cc100, #63a600);
+                  float: left;
+                  height: 100%;
+                  padding-left: 5px;
+                  font-size: 10px;
+                  line-height: 14px;
+                }
+              }
+            }
+
+            &.cell-customer {
+
+            }
+
+            &.cell-price {
+              text-align: center;
+              width: 60px;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              overflow: hidden;
+            }
+
+            &.cell-comment {
+              border-right: 0;
+            }
+
+            &.cell-buttons {
+              border-left: 0;
+              max-width: 70px;
+              text-align: right;
+              .btn-info {
+                .gradient(#ffc900, #f89809, #ffc900);
+              }
+            }
+
+          }
+        }
+      }
+
+      >table {
+        border-spacing: 1px;
+        border-collapse: separate;
+        background: #dddddd;
+        margin-bottom: 12px;
+        display: none;
+
+        th, td {
+          line-height: 26px;
+          padding: 0 12px;
+
+          color: #333333;
+
+          &.cell-articul {
+            width: 24px;
+            text-align: center;
+          }
+          &.cell-status {
+            width: 12px;
+            text-align: center;
+          }
+          &.cell-count {
+            width: 30px;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          &.cell-comment {
+            width: 20%;
+          }
+        }
+
+        th {
+          background: #cdcdcd;
+        }
+
+        td {
+          background: #ffffff;
+        }
+
+        tr.yellow {
+          td {
+            background: #ffeb7e;
+          }
+        }
+
+        td.cell-status {
+          background: #fff !important;
+          &.marked {
+            background: #b7e982 !important;
+          }
+        }
+
+      }
+
+      &.opened {
+        table {
+          display: table;
+        }
+        header {
+          .cell-date{
+            .btn-open{
+              display: none;
+            }
+            .btn-hide{
+              display: block;
+            }
+          }
+        }
+      }
+    }
   }
 }

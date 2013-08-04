@@ -1,3 +1,51 @@
+.block,.block-fluid{background: #f5f5f5; border: 10px solid #FFF; padding: 10px; margin-bottom: 20px;}
+.block-fluid{padding: 0px;}
+
+* html .row-form{ height: 1%; overflow: visible; } /* ie 6 */
+*+html .row-form{ min-height: 1%; } /* ie 7 */
+.row-form:after{clear: both; content: "."; display: block; height: 0; visibility: hidden; font-size: 0; }
+
+.row-form{border: 1px solid #DDD; border-top-color: #FFF; padding: 10px 15px; vertical-align: baseline;}
+.row-form:first-child{border-top-color: #DDD;}
+.row-form > [class^="span"]{color: #333; text-shadow: 1px 1px 1px #FFF; line-height: 30px;}
+
+
+.row-form .input-prepend, .row-form .input-append{margin-bottom: 0px !important;}
+.row-form .input-prepend .add-on, .row-form .input-append .add-on{font-size: 11px;}
+
+.row-form .input-prepend input[type="file"], .row-form .input-append input[type="file"]{width: 0px; left: -9999px; position: absolute; visibility: hidden;}
+
+.row-form [class^="span"] > div{margin-bottom: 10px;}
+.row-form [class^="span"] > span.bottom,
+.row-form [class^="span"] > span.top{font-size: 11px; color: #999; line-height: 14px; display: block; margin-top: 5px;}
+.row-form [class^="span"] > span.top{margin-bottom: 5px; margin-top: 0px;}
+.row-form [class^="span"] > span.top.title,
+.row-form [class^="span"] > span.bottom.title{color: #333;}
+
+
+/* highlights */
+.row-form.error [class^="span"]{color: #D96562;}
+.row-form.error input[type="text"]{border-color: #E8726E;}
+.row-form.error [class^="span"] > span{color: #D96562;}
+.row-form.warning [class^="span"]{color: #C1AC70;}
+.row-form.warning input[type="text"]{border-color: #C1AC70;}
+.row-form.warning [class^="span"] > span{color: #C1AC70;}
+.row-form.success [class^="span"]{color: #518A38;}
+.row-form.success input[type="text"]{border-color: #518A38;}
+.row-form.success [class^="span"] > span{color: #518A38;}
+.row-form.info [class^="span"]{color: #54A1E6;}
+.row-form.info input[type="text"]{border-color: #54A1E6;}
+.row-form.info [class^="span"] > span{color: #518A38;}
+/* eof highlights */
+
+.row-form input.input-mini{width: 20%;}
+.row-form input.input-small{width: 30%;}
+.row-form input.input-medium{width: 40%;}
+.row-form input.input-large{width: 50%;}
+.row-form input.input-xlarge{width: 70%;}
+.row-form input.input-xxlarge{width: 80%;}
+.row-form input.input-huge{width: 90%;}
+
 
 input[type="text"], input[type="password"], textarea, select {
   border-color: #DDD;
