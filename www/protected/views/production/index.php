@@ -96,16 +96,16 @@
             </header>
             <table>
                 <thead>
-                    <tr>
-                        <th class="cell-articul">Арт.</th>
-                        <th class="cell-name">Наименование</th>
-                        <th class="cell-count">Кол-во</th>
-                        <th class="cell-count">Отгружено</th>
-                        <th class="cell-comment">Комментарии</th>
-                        <th class="cell-status">Ф</th>
-                        <th class="cell-status">М</th>
-                        <th class="cell-status">Д</th>
-                    </tr>
+                <tr>
+                    <th class="cell-articul">Арт.</th>
+                    <th class="cell-name">Наименование</th>
+                    <th class="cell-count">Кол-во</th>
+                    <th class="cell-count">Отгружено</th>
+                    <th class="cell-comment">Комментарии</th>
+                    <th class="cell-status">Ф</th>
+                    <th class="cell-status">М</th>
+                    <th class="cell-status">Д</th>
+                </tr>
                 </thead>
                 <tbody>
                 <tr>
@@ -163,77 +163,176 @@
         </article>
 
     <? endfor; ?>
-
 </section>
 
 
-<div id="fModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+<div id="order_form" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true"
+     style="display: none;">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Новый заказ</h3>
+        <h3 id="myModalLabel">Новый заказ (№ 12)</h3>
     </div>
     <div class="row-fluid">
-        <div class="block-fluid">
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">Заказ №</span>
-                    <input type="text" name="fname" value="">
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#order_params">Параметры</a></li>
+            <li><a href="#order_install">Монтаж</a></li>
+            <li><a href="#order_products">Продукция</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="order_params">
+
+                <div class="block-fluid">
+                    <div class="row-form">
+                        <div class="span4">Дата:</div>
+                        <div class="span8">
+                            <input type="text" class="datepicker" name="lname" value="">
+                        </div>
+                    </div>
+                    <div class="row-form">
+                        <div class="span4">Планируемая дата отгрузки:</div>
+                        <div class="span8">
+                            <input type="text" class="datepicker" name="lname" value="">
+                        </div>
+                    </div>
+                    <div class="row-form">
+                        <div class="span4">Наименование подразделения:</div>
+                        <div class="span8">
+                            <input type="text" name="lname" value="Гоша сказал что тут ставится автоматом, тока я не понял каким">
+                        </div>
+                    </div>
+                    <div class="row-form">
+                        <div class="span4">Ответственный:</div>
+                        <div class="span8">
+                            <input type="text" name="lname" value="">
+                        </div>
+                    </div>
+                    <div class="row-form">
+                        <div class="span4">Заказчик:</div>
+                        <div class="span8">
+                            <input type="text" name="lname" value="">
+                        </div>
+                    </div>
+                    <div class="row-form">
+                        <div class="span4">Телефон заказчика:</div>
+                        <div class="span8">
+                            <input type="text" name="lname" value="">
+                        </div>
+                    </div>
+                    <div class="row-form">
+                        <div class="span4">Комментарий:</div>
+                        <div class="span8">
+                            <textarea></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">Дата:</span>
-                    <input type="text" name="lname" value="">
+
+            <div class="tab-pane" id="order_install">
+                <div class="block-fluid">
+                    <div class="row-form">
+                        <div class="span4">Монтаж:</div>
+                        <div class="span8">
+                            <input type="checkbox" checked="checked" value="1">
+                        </div>
+                    </div>
+
+                    <div class="row-form">
+                        <div class="span4">ФИО ответственного:</div>
+                        <div class="span8">
+                            <input type="text" name="lname" value="">
+                        </div>
+                    </div>
+
+                    <div class="row-form">
+                        <div class="span4">Телефон:</div>
+                        <div class="span8">
+                            <input type="text" name="lname" value="">
+                        </div>
+                    </div>
+
+                    <div class="row-form">
+                        <div class="span4">Адрес:</div>
+                        <div class="span8">
+                            <input type="text" name="lname" value="">
+                        </div>
+                    </div>
+
+                    <div class="row-form">
+                        <div class="span4">Комментарий к монтажу:</div>
+                        <div class="span8">
+                            <textarea></textarea>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">Планируемая дата отгрузки:</span>
-                    <input type="text" name="lname" value="">
-                </div>
-            </div>
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">Наименование подразделения:</span>
-                    <input type="text" name="lname" value="">
-                </div>
-            </div>
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">Ответственный:</span>
-                    <input type="text" name="lname" value="">
-                </div>
-            </div>
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">Заказчик:</span>
-                    <input type="text" name="lname" value="">
-                </div>
-            </div>
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">About:</span>
-                    <textarea></textarea>
-                </div>
-            </div>
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">About:</span>
-                    <textarea></textarea>
-                </div>
-            </div>
-            <div class="row-form">
-                <div class="span12">
-                    <span class="top title">About:</span>
-                    <textarea></textarea>
-                </div>
+
+            <div class="tab-pane" id="order_products">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="cell-num">№</th>
+                            <th class="cell-articul">Артикул</th>
+                            <th class="cell-name">Наименование</th>
+                            <th class="cell-count">Кол-во</th>
+                            <th class="cell-comment">Комментарий</th>
+                            <th class="cell-price">Цена</th>
+                            <th class="cell-amount">Сумма</th>
+                            <th class="cell-actions"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <? for($i = 1; $i < 4; $i++): ?>
+                            <tr>
+                                <td class="cell-num"><?=$i?></td>
+                                <td class="cell-articul">
+                                    <select>
+                                        <? for($j = 0; $j < 200; $j++): ?>
+                                            <option value="<?=$j?>">Артикул. <?=rand() % 100000 ?></option>
+                                        <? endfor; ?>
+                                    </select>
+                                </td>
+                                <td class="cell-name">
+                                    <select>
+                                        <? for($j = 0; $j < 200; $j++): ?>
+                                            <option value="<?=$j?>">Артикул. <?=rand() % 100000 ?></option>
+                                        <? endfor; ?>
+                                    </select>
+                                </td>
+                                <td class="cell-count">
+                                    <input type="text" name="spi" value="1" class="spinner" autocomplete="off" role="spinbutton">
+                                </td>
+                                <td class="cell-comment">
+                                    <textarea></textarea>
+                                </td>
+                                <td class="cell-price">
+                                    <input type="text">
+                                </td>
+                                <td class="cell-amount">
+                                    <span>$30</span>
+                                </td>
+                                <td class="cell-actions">
+                                    <button class="btn btn-mini"><span class="icon-remove"></span></button>
+                                </td>
+                            </tr>
+                        <? endfor; ?>
+                    </tbody>
+                </table>
+                <button class="btn btn-mini btn-success btn-add-production">Добавить продукцию</button>
             </div>
         </div>
+
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Добавить заказ</button>
         <button class="btn btn-warning" data-dismiss="modal" aria-hidden="true">Закрыть</button>
     </div>
+</div>
+
 </div>
 
 <script src="/js/components/calendar.js"></script>

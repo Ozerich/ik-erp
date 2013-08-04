@@ -14,12 +14,17 @@
     <title><?= !empty($this->pageTitle) ? $this->pageTitle : 'Система управления предприятием'?> – «Красивый город»</title>
 
     <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/thirdparty/jquery-ui/jquery-ui-1.9.1.custom.min.css">
 
     <link rel="stylesheet/less" type="text/less" href="/css/layout.less">
 
     <script>var less = {env: 'development'}</script>
 
     <script src="/js/thirdparty/jquery-2.0.3.min.js"></script>
+
+    <script src="/js/thirdparty/select2.js"></script>
+    <script src="/js/thirdparty/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="/js/thirdparty/jquery.uniform.min.js"></script>
     <script src="/js/thirdparty/bootstrap.min.js"></script>
     <script src="/js/thirdparty/less-1.3.3.min.js"></script>
     <script src="/js/thirdparty/knockout-2.3.0.js"></script>
