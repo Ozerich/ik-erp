@@ -76,7 +76,7 @@
             }
 
             cursor: pointer;
-            &:hover {
+            &:hover, &.selected {
               background: #54a1e6;
               color: #fff;
               span {
@@ -152,6 +152,11 @@
 
   #content {
     margin-left: 236px;
+
+    .no-orders {
+      text-align: center;
+      font-size: 20px;
+    }
 
     header {
       margin-bottom: 13px;
@@ -241,15 +246,19 @@
                   .gradient(#8cc100, #8cc100, #63a600);
                   float: left;
                   height: 100%;
-                  padding-left: 5px;
                   font-size: 10px;
                   line-height: 14px;
+                  span{
+                    margin-left: 5px;
+                  }
                 }
               }
             }
 
             &.cell-customer {
-
+              min-width: 150px;
+              width: 150px;
+              max-width: 150px;
             }
 
             &.cell-price {
@@ -373,7 +382,7 @@
     padding-left: 10px;
     padding-right: 10px;
 
-    .table-wr{
+    .table-wr {
       max-height: 334px;
       overflow-y: auto;
       margin-top: 10px;

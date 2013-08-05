@@ -1,5 +1,5 @@
 jQuery.fn.center = function () {
-    this.css("position","absolute");
+    this.css("position", "absolute");
     this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) +
         $(window).scrollTop()) + "px");
     this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) +
@@ -36,6 +36,9 @@ var App = {};
 
 App.Helper = {
 
+    SHORT_WEEKDAYS: ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вск'],
+    MONTHS: ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
+
     // Проверяет, является ли параметр числом
     isNumber: function (o) {
         return !(o instanceof Date) && !isNaN(o - 0) && o !== null && o !== "" && o !== false;
@@ -44,6 +47,22 @@ App.Helper = {
     // Проверяет, является ли параметр строкой
     isString: function (o) {
         return typeof o == 'string' || o instanceof String;
+    },
+
+    to2: function (o) {
+        return o < 10 ? '0' + o : o;
+    },
+
+    strToDate: function (str) {
+        return new Date(str.substr(0, 4), str.substr(5, 2), str.substr(8, 2));
+    },
+
+    getMonthName: function (date) {
+        return this.MONTHS[date.getMonth()];
+    },
+
+    getWeekDayName: function (date) {
+        return this.SHORT_WEEKDAYS[date.getDay() == 0 ? 6 : date.getDay() - 1];
     }
 
 };

@@ -10,8 +10,12 @@ class SiteController extends Controller
 
     public function actionError()
     {
-        if($error=Yii::app()->errorHandler->error)
+        $error = Yii::app()->errorHandler->error;
+        if ($error['code'] == 404)
             $this->render('/system/error404', $error);
+        else {
+            print_r($error);
+        }
     }
 
 }

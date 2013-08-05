@@ -1,4 +1,8 @@
-$.fn.Calendar = function () {
+$.fn.Calendar = function (onSelect) {
+
+    onSelect = onSelect || function () {
+    };
+
     var that = this;
 
     var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -27,7 +31,7 @@ $.fn.Calendar = function () {
             html += '<td class="empty"></td>';
         }
         for (j = 1, i = i + 1; i <= 7; i++, j++) {
-            html += '<td><span>' + j + '</span></td>';
+            html += '<td data-day="' + j + '"><span>' + j + '</span></td>';
         }
         html += '</tr>';
 
@@ -36,7 +40,7 @@ $.fn.Calendar = function () {
                 html += '<tr>';
             }
 
-            html += '<td><span>' + i + '</span></td>';
+            html += '<td data-day="' + i + '"><span>' + i + '</span></td>';
 
             if (j == 7) {
                 html += '</tr>';
@@ -52,6 +56,11 @@ $.fn.Calendar = function () {
         }
 
         $content.html(html);
+
+
+        $content.find('td').not('.empty').on('click', function () {
+            that.selectDate(new Date(that.currentYear, that.currentMonth, $(this).data('day')));
+        });
     };
 
     $btn_left.on('click', function () {
@@ -80,7 +89,19 @@ $.fn.Calendar = function () {
         return false;
     });
 
-    updateMonth();
+    this.selectDate = function (date) {
+        this.currentMonth = date.getMonth();
+        this.currentYear = date.getFullYear();
+
+        updateMonth();
+
+        $content.find('.day.selected').removeClass('selected');
+        $($content.find('td').not('.empty').get(date.getDate() - 1)).addClass('selected');
+
+        onSelect(date);
+    };
+    this.selectDate(today);
+
 };
 
 /*

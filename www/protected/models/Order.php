@@ -14,23 +14,25 @@ class Order extends CActiveRecord
 
     public function rules()
     {
-        return array(
-            array('name, articul, price', 'required'),
-        );
+        return array();
     }
 
     public function relations()
     {
-        return array();
+        return array(
+            'order_products' => array(self::HAS_MANY, 'OrderProduct', 'order_id'),
+        );
     }
 
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'name' => 'Название продукта',
-            'articul' => 'Артикул',
-            'price' => 'Цена',
-        );
+        return array();
+    }
+
+    public function afterDelete()
+    {
+        foreach ($this->order_products as $order_product) {
+            $order_product->delete();
+        }
     }
 }

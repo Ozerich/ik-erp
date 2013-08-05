@@ -16,37 +16,40 @@
             <div class="tab-pane active" id="order_params">
 
                 <div class="block-fluid">
-                    <div class="row-form">
+                    <div class="row-form" data-bind="css: {'error': errors.date_error().length}">
                         <div class="span4">Дата:</div>
                         <div class="span8">
                             <input type="text" class="datepicker"
                                    data-bind="datepicker: date, datepickerOptions: { minDate: new Date() }">
+                            <span class="bottom" data-bind="text: errors.date_error()"></span>
                         </div>
                     </div>
-                    <div class="row-form">
+                    <div class="row-form" data-bind="css: {'error': errors.shipping_date_error().length}">
                         <div class="span4">Планируемая дата отгрузки:</div>
                         <div class="span8">
                             <input type="text" class="datepicker" class="datepicker"
                                    data-bind="datepicker: shipping_date, datepickerOptions: { minDate: new Date() }">
+                            <span class="bottom" data-bind="text: errors.shipping_date_error()"></span>
                         </div>
                     </div>
                     <div class="row-form">
                         <div class="span4">Наименование подразделения:</div>
                         <div class="span8">
-                            <input type="text" name="lname"
-                                   value="Гоша сказал что тут ставится автоматом, тока я не понял каким">
+                            <select data-bind="options: divisions, value: division, optionsValue: 'id', optionsText: 'name'"></select>
                         </div>
                     </div>
-                    <div class="row-form">
+                    <div class="row-form" data-bind="css: {'error': errors.worker_error().length}">
                         <div class="span4">Ответственный:</div>
                         <div class="span8">
                             <input type="text" data-bind="value: worker">
+                            <span class="bottom" data-bind="text: errors.worker_error()"></span>
                         </div>
                     </div>
-                    <div class="row-form">
+                    <div class="row-form" data-bind="css: {'error': errors.customer_error().length}">
                         <div class="span4">Заказчик:</div>
                         <div class="span8">
                             <input type="text" data-bind="value: customer">
+                            <span class="bottom" data-bind="text: errors.customer_error()"></span>
                         </div>
                     </div>
                     <div class="row-form">
@@ -143,13 +146,14 @@
                                 <textarea data-bind="value: comment"></textarea>
                             </td>
                             <td class="cell-price">
-                                <input type="text" data-bind="value: price">
+                                <span data-bind="text: price"></span>
                             </td>
                             <td class="cell-amount">
                                 <span data-bind="text: total"></span>
                             </td>
                             <td class="cell-actions">
-                                <button class="btn btn-mini" data-bind="click: $root.delete_production_click"><span class="icon-remove"></span></button>
+                                <button class="btn btn-mini" data-bind="click: $root.delete_production_click"><span
+                                        class="icon-remove"></span></button>
                             </td>
                         </tr>
 
@@ -164,7 +168,8 @@
 
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" data-bind="click: submit_order">Добавить заказ</button>
-        <button class="btn btn-warning" data-dismiss="modal" aria-hidden="true">Закрыть</button>
+        <img src="/img/loaders/1d_2.gif" data-bind="visible: loading">
+        <button class="btn btn-primary" data-bind="visible: !loading(), click: submit_order">Добавить заказ</button>
+        <button class="btn btn-warning" data-bind="visible: !loading()" data-dismiss="modal" aria-hidden="true">Закрыть</button>
     </div>
 </div>

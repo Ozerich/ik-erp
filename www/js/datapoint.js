@@ -1,5 +1,28 @@
 App.DataPointGate = function () {
 
+    var prepareParams = function (_params) {
+
+        for (var i in _params) {
+            var param = _params[i];
+
+            if (param instanceof Date) {
+                param = param.getFullYear() + '-' + App.Helper.to2(param.getMonth()) + '-' + App.Helper.to2(param.getDate());
+            }
+
+            if (typeof param === 'boolean') {
+                param = param ? 1 : 0;
+            }
+
+            if (Object.prototype.toString.call(param) === '[object Array]') {
+                param = prepareParams(param);
+            }
+
+            _params[i] = param;
+        }
+
+        return _params;
+    };
+
     // Главная функция, осуществляет запрос к API, выполняя заппрос _command, параметры запроса _params
     this.Request = function (_controller, _action, _params, _callback, _errorCallback) {
 
@@ -14,6 +37,8 @@ App.DataPointGate = function () {
         if (_params === undefined) {
             _params = {};
         }
+
+        _params = prepareParams(_params);
 
         if (_callback === undefined) {
             _callback = function () {
@@ -58,8 +83,12 @@ App.DataPoint = {
         this._dataPointGate.Request("products", "Get", {}, _callback, _errorCallback);
     },
 
-    GetAllOrders: function(_callback, _errorCallback){
+    GetAllOrders: function (_callback, _errorCallback) {
         this._dataPointGate.Request('orders', 'Get', {}, _callback, _errorCallback);
+    },
+
+    AddOrder: function (_order, _callback, _errorCallback) {
+        this._dataPointGate.Request('orders', 'Create', _order, _callback, _errorCallback);
     }
 
 };

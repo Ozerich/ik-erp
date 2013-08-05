@@ -17,5 +17,6 @@ class ProductsController extends Controller
         Yii::app()->end();
     }
 
+
 }
 
