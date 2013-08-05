@@ -1,5 +1,10 @@
 #page_production {
 
+  #page_loader {
+    display: block;
+    text-align: center;
+  }
+
   aside {
     width: 218px;
     float: left;
@@ -299,6 +304,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
           }
+
           &.cell-comment {
             width: 20%;
           }
@@ -347,9 +353,8 @@
 }
 
 #order_form {
-  margin-top: -400px;
   width: 950px;
-  margin-left: -475px;
+  margin-left: -425px;
   .nav-tabs {
     margin: 0 10px;
     > li > a {
@@ -364,66 +369,78 @@
     padding-right: 0;
   }
 
-  #order_products{
+  #order_products {
     padding-left: 10px;
     padding-right: 10px;
-  }
 
-  table {
-    border-spacing: 1px;
-    border-collapse: separate;
-    background: #dddddd;
-    overflow: hidden;
-
-    .select2-container {
-      width: 100%;
+    .table-wr{
+      max-height: 334px;
+      overflow-y: auto;
+      margin-top: 10px;
     }
 
-    th, td {
-      line-height: 16px;
-      padding: 5px 12px;
+    table {
+      border-spacing: 1px;
+      border-collapse: separate;
+      background: #dddddd;
+      overflow: hidden;
 
-      color: #333333;
-
-      &.cell-num {
-        max-width: 0;
-      }
-
-      &.cell-actions {
-        max-width: 15px;
+      .select2-container {
+        width: 100%;
       }
 
-      &.cell-articul, &.cell-name {
-        max-width: 115px;
-      }
-      &.cell-count {
-        max-width: 50px;
-      }
-      &.cell-price, &.cell-amount {
-        max-width: 50px;
-        text-align: center;
-      }
-      &.cell-comment {
-        textarea {
-          height: 50px;
-          min-height: 0;
-          resize: none;
+      th, td {
+        line-height: 16px;
+        padding: 5px 12px;
+
+        color: #333333;
+
+        &.cell-num {
+          max-width: 0;
+        }
+
+        &.cell-actions {
+          max-width: 15px;
+        }
+
+        &.cell-articul, &.cell-name {
+          max-width: 115px;
+        }
+
+        &.cell-count, &.cell-price {
+          max-width: 50px;
+          input {
+            text-align: center;
+          }
+        }
+
+        &.cell-price, &.cell-amount {
+          max-width: 50px;
+          text-align: center;
+        }
+        &.cell-comment {
+          textarea {
+            height: 50px;
+            min-height: 0;
+            resize: none;
+          }
         }
       }
+
+      th {
+        background: #cdcdcd;
+      }
+
+      td {
+        background: #ffffff;
+      }
+
     }
 
-    th {
-      background: #cdcdcd;
+    .btn-add-production {
+      float: right;
+      margin: 10px 0;
     }
 
-    td {
-      background: #ffffff;
-    }
-
-  }
-
-  .btn-add-production {
-    float: right;
-    margin: 10px 0;
   }
 }

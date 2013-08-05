@@ -52,9 +52,11 @@
                         }
                         else {
                             $('.error-block').show().find('span').text(data.error);
+                            $('.submit-block').show();
+                            $('.loader').hide();
                         }
                     },
-                    complete: function () {
+                    error: function(){
                         $('.submit-block').show();
                         $('.loader').hide();
                     }

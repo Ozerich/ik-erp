@@ -330,7 +330,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-dialog .icon { padding: 1px 6px 0 0; float: left; }
 .ui-dialog .titleIcon { position: absolute; top: -10px; }
 .ui-dialog p { padding: 5px 10px !important; }
-.ui-dialog .ui-dialog-titlebar { position: relative; border: 1px solid #DDD; color: #fff; box-shadow: 0 1px 0 #fff; background: url("../../img/backgrounds/bg_box_head.jpg") left top repeat-x; background-clip: padding-box; 
+.ui-dialog .ui-dialog-titlebar { position: relative; border: 1px solid #DDD; color: #fff; box-shadow: 0 1px 0 #fff; background: url("/img/bg_box_head.jpg") left top repeat-x; background-clip: padding-box;
                                  -webkit-box-shadow: inset 0 1px white; -moz-box-shadow: inset 0 1px #fff; box-shadow: inset 0 1px white; 
                                  -moz-border-radius: 3px 3px 0px 0px; -webkit-border-radius: 3px 3px 0px 0px; border-radius: 3px 3px 0px 0px;
                                  padding: 7px 10px 4px 10px;
@@ -422,7 +422,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .formRow .ui-datepicker-inline { width: 195px; }
 .ui-datepicker .ui-datepicker-header { position:relative; padding: 7px 0 6px 0; border:0px; font-weight: bold; font-size: 11px; width: 100%; color: #FFF; border: 1px solid #DDD; 
                                        -moz-border-radius: 4px 4px 0px 0px; -webkit-border-radius: 4px 4px 0px 0px; border-radius: 4px 4px 0px 0px;                                        
-                                       box-shadow: inset 0 1px 0 #fff; -webkit-box-shadow: inset 0 1px 0 #fff; -moz-box-shadow: inset 0 1px 0 #fff; background: url("../../img/backgrounds/bg_box_head.jpg") left top repeat-x;}
+                                       box-shadow: inset 0 1px 0 #fff; -webkit-box-shadow: inset 0 1px 0 #fff; -moz-box-shadow: inset 0 1px 0 #fff; background: url("/img/bg_box_head.jpg") left top repeat-x;}
 .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next { position:absolute; top: 9px; width: 1.8em; height: 1.8em; cursor: pointer; }
 .ui-datepicker .ui-datepicker-prev-hover, .ui-datepicker .ui-datepicker-next-hover { background: none; }
 .ui-datepicker .ui-datepicker-prev { left:2px; }
