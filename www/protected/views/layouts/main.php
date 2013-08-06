@@ -28,6 +28,7 @@
     <script src="/js/thirdparty/bootstrap.min.js"></script>
     <script src="/js/thirdparty/less-1.3.3.min.js"></script>
     <script src="/js/thirdparty/jquery.maskedinput.min.js"></script>
+    <script src="/js/thirdparty/xeditable.min.js"></script>
 
     <script src="/js/thirdparty/knockout-2.3.0.js"></script>
     <script src="/js/binding_handlers.js"></script>

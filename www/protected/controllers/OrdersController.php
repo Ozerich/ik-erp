@@ -111,5 +111,22 @@ class OrdersController extends Controller
         $order_product->save();
         Yii::app()->end();
     }
+
+
+    public function actionSaveComment()
+    {
+        $order_product_id = Yii::app()->request->getPost('pk');
+        $value = Yii::app()->request->getPost('value');
+
+        $order_product = OrderProduct::model()->findByPk($order_product_id);
+        if(!$order_product){
+            throw new CHttpException(404);
+        }
+
+        $order_product->comment = $value;
+        $order_product->save();
+
+        Yii::app()->end();
+    }
 }
 

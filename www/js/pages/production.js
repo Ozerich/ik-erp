@@ -545,5 +545,12 @@ $(function () {
         pageViewModel.page_date(date);
     });
 
+    $('.editable').editable({
+        url: '/post',
+        type: 'text',
+        pk: 1,
+        name: 'username',
+        title: 'Enter username'
+    });
 });
 
