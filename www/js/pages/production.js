@@ -1,6 +1,5 @@
 var pageViewModel, orderFormViewModel;
 
-
 function Order() {
     var that = this;
 
@@ -69,8 +68,10 @@ function Order() {
         });
 
         return {
+            id: this.id,
             date: this.date(),
             shipping_date: this.shipping_date(),
+            worker: this.worker(),
             customer: this.customer(),
             customer_phone: this.customer_phone(),
             division: this.division(),
@@ -120,13 +121,13 @@ function OrderProduct() {
 
     this.toJSON = function () {
         return {
+            id: this.id,
             product_id: this.product_id(),
             count: this.count(),
             comment: this.comment()
         };
     }
 }
-
 
 function OrderFormViewModel() {
     var that = this;
@@ -148,6 +149,8 @@ function OrderFormViewModel() {
             name: 'Петроплан'
         }
     ];
+
+    this.id = ko.observable(0);
 
     this.date = ko.observable();
     this.shipping_date = ko.observable();
@@ -191,7 +194,10 @@ function OrderFormViewModel() {
     };
 
     this.setOrder = function (order) {
+
+        this.products_book(pageViewModel.products_all);
         if (order === null) {
+            this.id(null);
             this.date(new Date());
             this.shipping_date('');
             this.worker('');
@@ -206,6 +212,35 @@ function OrderFormViewModel() {
             this.install_phone('');
             this.products([new OrderProduct(), new OrderProduct(), new OrderProduct()]);
         }
+        else {
+            this.id(order.id);
+            this.date(order.date());
+            this.shipping_date(order.shipping_date());
+            this.worker(order.worker());
+            this.customer(order.customer());
+            this.division(order.division());
+            this.customer_phone(order.customer_phone());
+            this.comment(order.comment());
+            this.need_install(order.need_install());
+            this.install_address(order.install_address());
+            this.install_comment(order.install_comment());
+            this.install_person(order.install_person());
+            this.install_phone(order.install_phone());
+
+            this.products([]);
+
+            for (var i = 0; i < order.products().length; i++) {
+                var product = new OrderProduct();
+
+                product.id = order.products()[i].id;
+                product.product_id(order.products()[i].product_id());
+                product.count(order.products()[i].count());
+                product.comment(order.products()[i].comment());
+
+                this.products.push(product);
+            }
+
+        }
     };
 
     this.open = function () {
@@ -219,7 +254,9 @@ function OrderFormViewModel() {
         wnd.find('.nav-tabs a:first').trigger('click');
 
 
-        this.products_book(pageViewModel.products_all);
+        $('input:checkbox').uniform();
+
+
         wnd.modal();
     };
 
@@ -270,6 +307,7 @@ function OrderFormViewModel() {
 
             var order = new Order;
 
+            order.id = this.id();
             order.setDate(this.date());
             order.shipping_date(this.shipping_date());
             order.worker(this.worker());
@@ -288,7 +326,7 @@ function OrderFormViewModel() {
             ko.utils.arrayForEach(this.products(), function (product) {
                 var order_product = new OrderProduct;
 
-                order_product.id = 0;
+                order_product.id = product.id;
 
                 order_product.product_id(product.product_id());
                 order_product.count(product.count());
@@ -302,17 +340,29 @@ function OrderFormViewModel() {
             });
 
             that.loading(true);
-            App.DataPoint.AddOrder(order.toJSON(), function (data) {
+
+            App.DataPoint.SubmitOrder(order.toJSON(), function (data) {
                 that.loading(false);
+
+                var is_new_order = order.id == 0;
 
                 order.id = parseInt(data.order_id);
                 for (var j = 0; j < data.order_product_ids.length; j++) {
                     order.products()[j].id = data.order_product_ids[j];
                 }
 
-                order.opened(false);
+                if (is_new_order) {
+                    pageViewModel.orders.push(order);
+                    order.opened(false);
+                }
+                else {
+                    var _order = ko.utils.arrayFirst(pageViewModel.orders(), function (_order) {
+                        return _order.id == order.id;
+                    });
 
-                pageViewModel.orders.push(order);
+                    _order.opened(order.opened());
+                    pageViewModel.orders.replace(_order, order);
+                }
 
                 wnd.modal('hide');
             });
@@ -324,7 +374,8 @@ function OrderFormViewModel() {
 function PageViewModel() {
     var that = this;
 
-    this.page_date = ko.observable(new Date());
+    var today = new Date();
+    this.page_date = ko.observable(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
 
     this.orders = ko.observableArray();
     this.filtered_orders = ko.computed(function () {
@@ -332,9 +383,11 @@ function PageViewModel() {
         var date_start = that.page_date();
         var date_end = new Date(that.page_date().getFullYear(), that.page_date().getMonth() + 1, 0);
 
-        return ko.utils.arrayFilter(this.orders(), function (order) {
+        console.log(date_start + '-' + date_end);
+
+        return ko.utils.arrayFilter(this.orders(),function (order) {
             return order.date() >= date_start && order.date() <= date_end;
-        }).sort(function(left, right){
+        }).sort(function (left, right) {
                 return left.date() > right.date() ? 1 : -1;
             });
 
@@ -378,7 +431,7 @@ function PageViewModel() {
                     model.customer_phone(order.customer_phone);
                     model.comment(order.comment);
                     model.worker(order.worker);
-                    model.need_install(order.need_install);
+                    model.need_install(order.need_install == 0 ? false : true);
                     model.install_address(order.install_address);
                     model.install_comment(order.install_comment);
                     model.install_person(order.install_person);
@@ -390,9 +443,9 @@ function PageViewModel() {
 
                         var order_product_model = new OrderProduct();
 
-                        order_product_model.id = order_product.id;
+                        order_product_model.id = parseInt(order_product.id);
                         order_product_model.product_id(order_product.product_id);
-                        order_product_model.count(order_product.count);
+                        order_product_model.count(parseInt(order_product.count));
                         order_product_model.comment(order_product.comment);
                         order_product_model.state_1(false);
                         order_product_model.state_2(false);
@@ -430,6 +483,12 @@ function PageViewModel() {
         if (that.init_loading())return false;
 
         orderFormViewModel.setOrder(null);
+
+        orderFormViewModel.open();
+    };
+
+    this.edit_order_click = function (order) {
+        orderFormViewModel.setOrder(order);
         orderFormViewModel.open();
     };
 }
@@ -446,9 +505,6 @@ $(function () {
     $('#calendar').Calendar(function (date) {
         pageViewModel.page_date(date);
     });
-
-    $('input:checkbox').uniform();
-
 
 });
 

@@ -7,7 +7,8 @@ $.fn.Calendar = function (onSelect) {
 
     var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 
-    var today = new Date;
+    var today = new Date();
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
     this.currentMonth = today.getMonth();
     this.currentYear = today.getFullYear();
@@ -103,42 +104,3 @@ $.fn.Calendar = function (onSelect) {
     this.selectDate(today);
 
 };
-
-/*
- <tr>
- <td class="empty"></td>
- <td class="day"><span>1</span></td>
- <td class="day"><span>2</span></td>
- <td class="day"><span>3</span></td>
- <td class="day"><span>4</span></td>
- <td class="day"><span>5</span></td>
- <td class="day"><span>6</span></td>
- </tr>
- <tr>
- <td class="day"><span>1</span></td>
- <td class="day"><span>2</span></td>
- <td class="day"><span>3</span></td>
- <td class="day"><span>4</span></td>
- <td class="day"><span>5</span></td>
- <td class="day"><span>6</span></td>
- <td class="day"><span>7</span></td>
- </tr>
- <tr>
- <td class="day"><span>1</span></td>
- <td class="day"><span>2</span></td>
- <td class="day"><span>3</span></td>
- <td class="day"><span>4</span></td>
- <td class="day"><span>5</span></td>
- <td class="day"><span>6</span></td>
- <td class="day"><span>7</span></td>
- </tr>
- <tr>
- <td class="day"><span>1</span></td>
- <td class="day"><span>2</span></td>
- <td class="day"><span>3</span></td>
- <td class="day"><span>4</span></td>
- <td class="empty"></td>
- <td class="empty"></td>
- <td class="empty"></td>
- </tr>
- */

@@ -87,8 +87,8 @@ App.DataPoint = {
         this._dataPointGate.Request('orders', 'Get', {}, _callback, _errorCallback);
     },
 
-    AddOrder: function (_order, _callback, _errorCallback) {
-        this._dataPointGate.Request('orders', 'Create', _order, _callback, _errorCallback);
+    SubmitOrder: function (_order, _callback, _errorCallback) {
+        this._dataPointGate.Request('orders', 'Submit', _order, _callback, _errorCallback);
     }
 
 };

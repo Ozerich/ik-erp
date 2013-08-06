@@ -89,7 +89,7 @@
                                     Авиаконструкторов 2
                                 </td>
                                 <td class="cell-buttons">
-                                    <button class="btn btn-mini"><span class="icon-edit"></span></button>
+                                    <button class="btn btn-mini" data-bind="click: $root.edit_order_click"><span class="icon-edit"></span></button>
                                     <button class="btn btn-mini btn-info"><span class="icon-info-sign"></span></button>
                                     <button class="btn btn-mini"><span class="icon-asterisk"></span></button>
                                 </td>
@@ -113,8 +113,8 @@
                         <tbody data-bind="foreach: products">
 
                         <tr data-bind="css:{'yellow': comment().length > 0}">
-                            <td class="cell-articul" data-bind="text: product().articul"></td>
-                            <td class="cell-name" data-bind="text: product().name"></td>
+                            <td class="cell-articul" data-bind="text: product() ? product().articul : ''"></td>
+                            <td class="cell-name" data-bind="text: product() ? product().name : ''"></td>
                             <td class="cell-count" data-bind="text: count">1</td>
                             <td class="cell-count">0</td>
                             <td class="cell-comment" data-bind="text: comment"></td>

@@ -29,10 +29,19 @@ class OrdersController extends Controller
     }
 
 
-    public function actionCreate()
+    public function actionSubmit()
     {
+        $id = Yii::app()->request->getPost('id');
 
-        $order = new Order;
+        if ($id) {
+            $order = Order::model()->findByPk($id);
+        } else {
+            $order = new Order;
+        }
+
+        if (!$order) {
+            throw new CHttpException(404);
+        }
 
         $order->date = Yii::app()->request->getPost('date');
         $order->shipping_date = Yii::app()->request->getPost('shipping_date');
@@ -56,7 +65,7 @@ class OrdersController extends Controller
                 continue;
             }
 
-            $order_product = new OrderProduct;
+            $order_product = $product['id'] ? OrderProduct::model()->findByPk($product['id']) : new OrderProduct;
             $order_product->order_id = $order->id;
             $order_product->product_id = $product_model->id;
             $order_product->count = $product['count'];
@@ -64,6 +73,12 @@ class OrdersController extends Controller
             $order_product->save();
 
             $order_product_ids[] = $order_product->id;
+        }
+
+        foreach ($order->order_products as $order_product) {
+            if (!in_array($order_product->id, $order_product_ids)) {
+                $order_product->delete();
+            }
         }
 
         echo json_encode(array('order_id' => $order->id, 'order_product_ids' => $order_product_ids));

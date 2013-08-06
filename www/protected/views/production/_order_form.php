@@ -20,7 +20,7 @@
                         <div class="span4">Дата:</div>
                         <div class="span8">
                             <input type="text" class="datepicker"
-                                   data-bind="datepicker: date, datepickerOptions: { minDate: new Date() }">
+                                   data-bind="datepicker: date, datepickerOptions: {}">
                             <span class="bottom" data-bind="text: errors.date_error()"></span>
                         </div>
                     </div>
@@ -137,8 +137,7 @@
                                     style="width: 150px"></select>
                             </td>
                             <td class="cell-count">
-                                <input type="text" name="spi" value="1"
-                                       data-bind="spinner: count, spinnerOptions: { min: 1, max: 100 }"
+                                <input type="text" name="spi" data-bind="spinner: count, spinnerOptions: { min: 1, max: 100 }"
                                        autocomplete="off"
                                        role="spinbutton">
                             </td>

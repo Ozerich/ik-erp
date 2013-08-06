@@ -69,15 +69,16 @@ ko.bindingHandlers.spinner = {
             var observable = valueAccessor();
             observable($(element).spinner("value"));
         });
-        ko.utils.registerEventHandler(element, "spin", function () {
+        ko.utils.registerEventHandler(element, "spinstop", function () {
             var observable = valueAccessor();
             observable($(element).spinner("value"));
         });
 
     },
 
-    update: function(element) {
-        $(element).trigger('change');
+    update: function(element, valueAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        $(element).spinner("value", value);
     }
 
 };
