@@ -16,7 +16,7 @@ class OrderProduct extends CActiveRecord
     {
         return array(
             array('order_id, product_id, count, pos', 'required'),
-            array('comment', 'safe')
+            array('comment, state_1, state_2, state_3', 'safe')
         );
     }
 

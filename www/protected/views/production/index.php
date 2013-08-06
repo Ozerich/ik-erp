@@ -79,7 +79,7 @@
                                     <span class="name">Заказ № <span data-bind="text: id"></span> от <span data-bind="text: date_str"></span></span>
 
                                     <div class="progress">
-                                        <div class="progress-value" data-bind="style: {width: progress_percent() + '%'}"><span data-bind="text: progress_percent"></span> %</div>
+                                        <div class="progress-value" data-bind="style: {width: progress_percent() + '%'}"><span data-bind="text: progress_text"></span></div>
                                     </div>
                                 </td>
                                 <td class="cell-customer" data-bind="text: customer"></td>
@@ -118,9 +118,9 @@
                             <td class="cell-count" data-bind="text: count">1</td>
                             <td class="cell-count">0</td>
                             <td class="cell-comment" data-bind="text: comment"></td>
-                            <td class="cell-status"></td>
-                            <td class="cell-status"></td>
-                            <td class="cell-status"></td>
+                            <td class="cell-status" data-bind="css:{'marked': state_1},click: function(data, event){$root.change_state(1, data)}"></td>
+                            <td class="cell-status" data-bind="css:{'marked': state_2},click: function(data, event){$root.change_state(2, data)}"></td>
+                            <td class="cell-status" data-bind="css:{'marked': state_3},click: function(data, event){$root.change_state(3, data)}"></td>
                         </tr>
 
                         </tbody>

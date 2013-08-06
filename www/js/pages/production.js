@@ -56,9 +56,26 @@ function Order() {
 
 
     this.progress_percent = ko.computed(function () {
-        return 0;
-    });
+        var sum = 0;
 
+        ko.utils.arrayForEach(this.products(), function (product) {
+            if (product.state_1() && product.state_2() && product.state_3()) {
+                sum++;
+            }
+        });
+
+        return Math.round(100 * sum / this.products().length);
+    }, this);
+
+    this.progress_text = ko.computed(function () {
+        var percent = this.progress_percent();
+        if (percent == 100) {
+            return 'Готов. Отгрузить полностью?';
+        }
+        else {
+            return percent + ' %';
+        }
+    }, this);
 
     this.toJSON = function () {
         var productsJSON = [];
@@ -342,9 +359,7 @@ function OrderFormViewModel() {
             that.loading(true);
 
             App.DataPoint.SubmitOrder(order.toJSON(), function (data) {
-                that.loading(false);
-
-                var is_new_order = order.id == 0;
+                var is_new_order = order.id == null;
 
                 order.id = parseInt(data.order_id);
                 for (var j = 0; j < data.order_product_ids.length; j++) {
@@ -360,11 +375,16 @@ function OrderFormViewModel() {
                         return _order.id == order.id;
                     });
 
-                    _order.opened(order.opened());
+                    order.opened(_order.opened());
+
                     pageViewModel.orders.replace(_order, order);
                 }
 
-                wnd.modal('hide');
+                wnd.modal('hide').on('hidden', function () {
+
+                    that.loading(false);
+                });
+
             });
 
         }
@@ -408,6 +428,25 @@ function PageViewModel() {
         return result;
     };
 
+    this.change_state = function (num, data) {
+
+        if (num == 1) {
+            data.state_1(!data.state_1());
+            App.DataPoint.ChangeOrderProductState(data.id, 1, data.state_1());
+        }
+
+        else if (num == 2) {
+            data.state_2(!data.state_2());
+            App.DataPoint.ChangeOrderProductState(data.id, 2, data.state_2());
+        }
+
+        else if (num == 3) {
+            data.state_3(!data.state_3());
+            App.DataPoint.ChangeOrderProductState(data.id, 3, data.state_3());
+        }
+
+    };
+
     this.init_loading = ko.observable(true);
     this.load = function () {
         App.DataPoint.GetAllProducts(function (data) {
@@ -447,9 +486,9 @@ function PageViewModel() {
                         order_product_model.product_id(order_product.product_id);
                         order_product_model.count(parseInt(order_product.count));
                         order_product_model.comment(order_product.comment);
-                        order_product_model.state_1(false);
-                        order_product_model.state_2(false);
-                        order_product_model.state_3(false);
+                        order_product_model.state_1(order_product.state_1 == 1);
+                        order_product_model.state_2(order_product.state_2 == 1);
+                        order_product_model.state_3(order_product.state_3 == 1);
 
                         model.products.push(order_product_model);
                     }

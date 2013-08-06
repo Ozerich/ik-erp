@@ -16,6 +16,7 @@ class OrdersController extends Controller
             foreach ($_order->order_products as $order_product) {
                 $product = $order_product->attributes;
                 $product['product'] = $order_product->product->attributes;
+
                 $products[] = $product;
             }
 
@@ -82,6 +83,32 @@ class OrdersController extends Controller
         }
 
         echo json_encode(array('order_id' => $order->id, 'order_product_ids' => $order_product_ids));
+        Yii::app()->end();
+    }
+
+
+    public function actionChangeState()
+    {
+        $order_product_id = Yii::app()->request->getPost('order_product_id');
+        $state = Yii::app()->request->getPost('state');
+        $value = Yii::app()->request->getPost('value');
+
+        $order_product = OrderProduct::model()->findByPk($order_product_id);
+        if (!$order_product) {
+            throw new CHttpException(404);
+        }
+
+        if ($state == 1) {
+            $order_product->state_1 = $value ? 1 : 0;
+        }
+        if ($state == 2) {
+            $order_product->state_2 = $value ? 1 : 0;
+        }
+        if ($state == 3) {
+            $order_product->state_3 = $value ? 1 : 0;
+        }
+
+        $order_product->save();
         Yii::app()->end();
     }
 }

@@ -1,32 +1,24 @@
--- phpMyAdmin SQL Dump
--- version 4.0.1
--- http://www.phpmyadmin.net
---
--- Хост: localhost
--- Время создания: Авг 05 2013 г., 18:10
--- Версия сервера: 5.5.25
--- Версия PHP: 5.3.13
+/*
+Navicat MySQL Data Transfer
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
+Source Server         : localhost
+Source Server Version : 50525
+Source Host           : localhost:3306
+Source Database       : ik_erp
 
+Target Server Type    : MYSQL
+Target Server Version : 50525
+File Encoding         : 65001
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+Date: 2013-08-07 00:21:21
+*/
 
---
--- База данных: `ik_erp`
---
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `orders`
---
-
-CREATE TABLE IF NOT EXISTS `orders` (
+SET FOREIGN_KEY_CHECKS=0;
+-- ----------------------------
+-- Table structure for `orders`
+-- ----------------------------
+DROP TABLE IF EXISTS `orders`;
+CREATE TABLE `orders` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `date` date NOT NULL,
   `shipping_date` date NOT NULL,
@@ -41,58 +33,65 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `install_address` varchar(255) DEFAULT NULL,
   `install_comment` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+-- ----------------------------
+-- Records of orders
+-- ----------------------------
+INSERT INTO `orders` VALUES ('1', '2013-07-07', '2013-07-30', '1', 'Ответственный работник', 'Заказчик неплохой', '+7 (812) 312-38-12', 'Хороший заказ, будем делать!', '1', 'Монтажников Вася', '+7 (444) 444-44-44', 'ул. Минина', 'Есть монтаж');
 
---
--- Структура таблицы `order_products`
---
-
-CREATE TABLE IF NOT EXISTS `order_products` (
+-- ----------------------------
+-- Table structure for `order_products`
+-- ----------------------------
+DROP TABLE IF EXISTS `order_products`;
+CREATE TABLE `order_products` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `order_id` int(10) unsigned NOT NULL,
   `product_id` int(10) unsigned NOT NULL,
   `pos` int(10) unsigned NOT NULL,
   `count` int(10) unsigned NOT NULL,
   `comment` text COLLATE utf8_unicode_ci NOT NULL,
+  `state_1` tinyint(1) NOT NULL,
+  `state_2` tinyint(1) NOT NULL,
+  `state_3` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- --------------------------------------------------------
+-- ----------------------------
+-- Records of order_products
+-- ----------------------------
+INSERT INTO `order_products` VALUES ('1', '1', '1', '1', '4', 'Дешево но сердито!', '1', '1', '1');
+INSERT INTO `order_products` VALUES ('2', '1', '2', '2', '2', '', '1', '1', '1');
+INSERT INTO `order_products` VALUES ('3', '1', '5', '3', '1', 'дорогой продукт', '1', '1', '1');
 
---
--- Структура таблицы `products`
---
-
-CREATE TABLE IF NOT EXISTS `products` (
+-- ----------------------------
+-- Table structure for `products`
+-- ----------------------------
+DROP TABLE IF EXISTS `products`;
+CREATE TABLE `products` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `articul` varchar(15) NOT NULL,
   `name` varchar(255) NOT NULL,
   `price` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
---
--- Дамп данных таблицы `products`
---
+-- ----------------------------
+-- Records of products
+-- ----------------------------
+INSERT INTO `products` VALUES ('1', '0001', 'Продукт 1', '1111');
+INSERT INTO `products` VALUES ('2', '0002', 'Продукт 2', '2222');
+INSERT INTO `products` VALUES ('3', '0003', 'Продукт 3', '3333');
+INSERT INTO `products` VALUES ('4', '0004', 'Продукт 4', '4444');
+INSERT INTO `products` VALUES ('5', '0005', 'Продукт 5', '5555');
+INSERT INTO `products` VALUES ('6', '0006', 'Продукт 6', '6666');
+INSERT INTO `products` VALUES ('7', '0007', 'Продукт 7', '7777');
 
-INSERT INTO `products` (`id`, `articul`, `name`, `price`) VALUES
-(1, '0001', 'Продукт 1', 1111),
-(2, '0002', 'Продукт 2', 2222),
-(3, '0003', 'Продукт 3', 3333),
-(4, '0004', 'Продукт 4', 4444),
-(5, '0005', 'Продукт 5', 5555),
-(6, '0006', 'Продукт 6', 6666),
-(7, '0007', 'Продукт 7', 7777);
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `users`
---
-
-CREATE TABLE IF NOT EXISTS `users` (
+-- ----------------------------
+-- Table structure for `users`
+-- ----------------------------
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
@@ -100,15 +99,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `surname` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `last_login` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Дамп данных таблицы `users`
---
-
-INSERT INTO `users` (`id`, `email`, `password`, `name`, `surname`, `last_login`) VALUES
-(1, 'ozicoder@gmail.com', 'admin', '', '', NULL);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- ----------------------------
+-- Records of users
+-- ----------------------------
+INSERT INTO `users` VALUES ('1', 'ozicoder@gmail.com', 'admin', '', '', null);

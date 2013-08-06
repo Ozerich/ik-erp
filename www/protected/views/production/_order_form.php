@@ -168,7 +168,7 @@
     </div>
     <div class="modal-footer">
         <img src="/img/loaders/1d_2.gif" data-bind="visible: loading">
-        <button class="btn btn-primary" data-bind="visible: !loading(), click: submit_order">Добавить заказ</button>
+        <button class="btn btn-primary" data-bind="visible: !loading(), click: submit_order, text: id() ? 'Сохранить' : 'Добавить заказ'"></button>
         <button class="btn btn-warning" data-bind="visible: !loading()" data-dismiss="modal" aria-hidden="true">Закрыть</button>
     </div>
 </div>
