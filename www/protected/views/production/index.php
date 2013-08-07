@@ -50,10 +50,10 @@
         <div class="no-orders" data-bind="visible: !init_loading() && filtered_orders().length == 0">Нет заказов</div>
 
         <header data-bind="visible: !init_loading() && filtered_orders().length">
-            <div class="btn-group" data-toggle="buttons-radio">
-                <button type="button" class="btn active">Табличный вид</button>
-                <button type="button" class="btn">Сетевой вид</button>
-                <button type="button" class="btn">На рассмотрении</button>
+            <div class="btn-group">
+                <button type="button" class="btn" data-bind="css: {'active': active_page_tab() == 1}, click: function(){change_tab(1);}">Табличный вид</button>
+                <button type="button" class="btn" data-bind="css: {'active': active_page_tab() == 2}, click: function(){change_tab(2);}">Сетевой вид</button>
+                <button type="button" class="btn" data-bind="css: {'active': active_page_tab() == 3}, click: function(){change_tab(3);}">На рассмотрении</button>
             </div>
             <div class="right-buttons">
                 <button class="btn" data-bind="click: toggle_all"><span class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>

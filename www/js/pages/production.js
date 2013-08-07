@@ -253,6 +253,9 @@ function OrderFormViewModel() {
                 product.product_id(order.products()[i].product_id());
                 product.count(order.products()[i].count());
                 product.comment(order.products()[i].comment());
+                product.state_1(order.products()[i].state_1());
+                product.state_2(order.products()[i].state_2());
+                product.state_3(order.products()[i].state_3());
 
                 this.products.push(product);
             }
@@ -349,9 +352,9 @@ function OrderFormViewModel() {
                 order_product.count(product.count());
                 order_product.comment(product.comment());
 
-                order_product.state_1(false);
-                order_product.state_2(false);
-                order_product.state_3(false);
+                order_product.state_1(product.state_1());
+                order_product.state_2(product.state_2());
+                order_product.state_3(product.state_3());
 
                 order.products.push(order_product);
             });
@@ -397,13 +400,17 @@ function PageViewModel() {
     var today = new Date();
     this.page_date = ko.observable(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
 
+
+    this.active_page_tab = ko.observable(1);
+    this.change_tab = function(tab){
+        this.active_page_tab(tab);
+    };
+
     this.orders = ko.observableArray();
     this.filtered_orders = ko.computed(function () {
 
         var date_start = that.page_date();
         var date_end = new Date(that.page_date().getFullYear(), that.page_date().getMonth() + 1, 0);
-
-        console.log(date_start + '-' + date_end);
 
         return ko.utils.arrayFilter(this.orders(),function (order) {
             return order.date() >= date_start && order.date() <= date_end;
