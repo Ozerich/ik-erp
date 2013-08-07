@@ -223,16 +223,16 @@ ko.bindingHandlers.fullCalendar = {
         var events = ko.utils.unwrapObservable(valueAccessor());
         $(element).empty();
 
-        $(element).fullCalendar({
-            events: events,
-            header: [],
-            firstDay: 1,
-            contentHeight: 750,
-            dayNamesShort : ['Вск', 'Пн', 'Вт', 'Ср', 'Чтв', 'Пт', 'Сб'],
-            eventAfterRender: function(event, element, view) {
-                //$(element).css('width','99px');
-            }
-        });
+        setTimeout(function () {
+            $(element).fullCalendar({
+                events: events,
+                header: [],
+                firstDay: 1,
+                contentHeight: 750,
+                dayNamesShort: ['Вск', 'Пн', 'Вт', 'Ср', 'Чтв', 'Пт', 'Сб'],
+                timeFormat: ''
+            });
+        }, 0);
     }
 };
 
