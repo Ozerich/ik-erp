@@ -69,7 +69,7 @@
                         class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>
                     Свернуть/Развернуть всё
                 </button>
-                <button class="btn" data-bind="visible: (active_page_tab() == 2 || filtered_date_orders().length > 0)"><span class="icon-print"></span>
+                <button class="btn" data-bind="visible: (active_page_tab() == 2 || filtered_orders().length > 0)"><span class="icon-print"></span>
                     Печать
                 </button>
             </div>
