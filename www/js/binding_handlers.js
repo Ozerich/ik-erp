@@ -1,5 +1,5 @@
 ko.bindingHandlers.datepicker = {
-    init: function(element, valueAccessor, allBindingsAccessor) {
+    init: function (element, valueAccessor, allBindingsAccessor) {
         //initialize datepicker with some optional options
         var options = allBindingsAccessor().datepickerOptions || {};
         $(element).datepicker(options);
@@ -11,12 +11,12 @@ ko.bindingHandlers.datepicker = {
         });
 
         //handle disposal (if KO removes by the template binding)
-        ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
             $(element).datepicker("destroy");
         });
 
     },
-    update: function(element, valueAccessor) {
+    update: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
 
         //handle date data coming via json from Microsoft
@@ -34,30 +34,30 @@ ko.bindingHandlers.datepicker = {
 
 
 ko.bindingHandlers.select2 = {
-    init: function(element, valueAccessor, allBindingsAccessor) {
+    init: function (element, valueAccessor, allBindingsAccessor) {
         var obj = valueAccessor(),
             allBindings = allBindingsAccessor(),
             lookupKey = allBindings.lookupKey;
         $(element).select2(obj);
         if (lookupKey) {
             var value = ko.utils.unwrapObservable(allBindings.value);
-            $(element).select2('data', ko.utils.arrayFirst(obj.data.results, function(item) {
+            $(element).select2('data', ko.utils.arrayFirst(obj.data.results, function (item) {
                 return item[lookupKey] === value;
             }));
         }
 
-        ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
             $(element).select2('destroy');
         });
     },
-    update: function(element) {
+    update: function (element) {
         $(element).trigger('change');
     }
 };
 
 ko.bindingHandlers.spinner = {
 
-    init: function(element, valueAccessor, allBindingsAccessor) {
+    init: function (element, valueAccessor, allBindingsAccessor) {
         var obj = valueAccessor(),
             allBindings = allBindingsAccessor(),
             lookupKey = allBindings.lookupKey;
@@ -76,13 +76,13 @@ ko.bindingHandlers.spinner = {
 
     },
 
-    update: function(element, valueAccessor) {
+    update: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
         $(element).spinner("value", value);
     }
 };
 
-(function(factory) {
+(function (factory) {
     if (typeof define === "function" && define.amd) {
         // AMD anonymous module
         define(["knockout", "jquery"], factory);
@@ -90,7 +90,7 @@ ko.bindingHandlers.spinner = {
         // No module loader (plain <script> tag) - put directly in global namespace
         factory(window.ko, window.jQuery);
     }
-})(function(ko, $) {
+})(function (ko, $) {
     ko.bindingHandlers.editable = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var $element = $(element),
@@ -122,7 +122,7 @@ ko.bindingHandlers.spinner = {
                 }
             }
 
-            if ((editableOptions.type === 'select' || editableOptions.type === 'checklist'|| editableOptions.type === 'typeahead') && !editableOptions.source && editableOptions.options) {
+            if ((editableOptions.type === 'select' || editableOptions.type === 'checklist' || editableOptions.type === 'typeahead') && !editableOptions.source && editableOptions.options) {
                 if (editableOptions.optionsCaption)
                     editableOptions.prepend = editableOptions.optionsCaption;
 
@@ -137,7 +137,7 @@ ko.bindingHandlers.spinner = {
                         return defaultValue;
                 }
 
-                editableOptions.source = function() {
+                editableOptions.source = function () {
                     return ko.utils.arrayMap(editableOptions.options(), function (item) {
                         var optionValue = applyToObject(item, editableOptions.optionsValue, item);
                         var optionText = applyToObject(item, editableOptions.optionsText, optionText);
@@ -162,7 +162,8 @@ ko.bindingHandlers.spinner = {
                 $editable.on('save.ko', function (e, params) {
                     value(params.newValue);
                 })
-            };
+            }
+            ;
 
             if (editableOptions.save) {
                 $editable.on('save', editableOptions.save);
@@ -198,3 +199,40 @@ ko.bindingHandlers.spinner = {
         }
     };
 });
+
+ko.bindingHandlers.bootstrapPopover = {
+    init: function (element, valueAccessor) {
+        var options = ko.utils.unwrapObservable(valueAccessor());
+        var defaultOptions = {
+            placement: 'left'
+        };
+        options = $.extend(true, {}, defaultOptions, options);
+
+        $(element).on('show', function () {
+            $('[rel=popover]').not(element).popover('hide');
+        });
+
+        $(element).popover(options);
+        $(element).attr('rel', 'popover');
+    }
+};
+
+ko.bindingHandlers.fullCalendar = {
+
+    update: function (element, valueAccessor) {
+        var events = ko.utils.unwrapObservable(valueAccessor());
+        $(element).empty();
+
+        $(element).fullCalendar({
+            events: events,
+            header: [],
+            firstDay: 1,
+            contentHeight: 750,
+            dayNamesShort : ['Вск', 'Пн', 'Вт', 'Ср', 'Чтв', 'Пт', 'Сб'],
+            eventAfterRender: function(event, element, view) {
+                //$(element).css('width','99px');
+            }
+        });
+    }
+};
+

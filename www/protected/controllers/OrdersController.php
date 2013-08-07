@@ -119,12 +119,28 @@ class OrdersController extends Controller
         $value = Yii::app()->request->getPost('value');
 
         $order_product = OrderProduct::model()->findByPk($order_product_id);
-        if(!$order_product){
+        if (!$order_product) {
             throw new CHttpException(404);
         }
 
         $order_product->comment = $value;
         $order_product->save();
+
+        Yii::app()->end();
+    }
+
+    public function actionChangeStatus()
+    {
+        $order_id = Yii::app()->request->getPost('order_id');
+        $status = Yii::app()->request->getPost('status');
+
+        $order = Order::model()->findByPk($order_id);
+        if (!$order) {
+            throw new CHttpException(404);
+        }
+
+        $order->status = $status;
+        $order->save();
 
         Yii::app()->end();
     }

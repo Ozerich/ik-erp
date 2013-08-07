@@ -1,6 +1,7 @@
 <div id="page">
     <aside>
-        <a href="#" class="btn btn-success btn-new-order" id="btn_new_order" data-bind="click: new_order_click, css: {'disabled': init_loading}">Новый заказ</a>
+        <a href="#" class="btn btn-success btn-new-order" id="btn_new_order"
+           data-bind="click: new_order_click, css: {'disabled': init_loading}">Новый заказ</a>
 
         <section class="calendar-block">
             <div id="calendar">
@@ -29,7 +30,7 @@
             </div>
         </section>
 
-        <section class="categories-block">
+        <section class="categories-block" data-bind="visible: active_page_tab() != 3">
             <ul>
                 <li><a href="#">В работе</a></li>
                 <li><a href="#">Заказы на производство</a></li>
@@ -47,23 +48,40 @@
 
         <div id="page_loader" data-bind="visible: init_loading"><img src="/img/loaders/1d_6.gif"></div>
 
-        <div class="no-orders" data-bind="visible: !init_loading() && filtered_orders().length == 0">Нет заказов</div>
 
-        <header data-bind="visible: !init_loading() && filtered_orders().length">
+        <header data-bind="visible: !init_loading() && (active_page_tab() == 2 || filtered_date_orders().length > 0)">
             <div class="btn-group">
-                <button type="button" class="btn" data-bind="css: {'active': active_page_tab() == 1}, click: function(){change_tab(1);}">Табличный вид</button>
-                <button type="button" class="btn" data-bind="css: {'active': active_page_tab() == 2}, click: function(){change_tab(2);}">Сетевой вид</button>
-                <button type="button" class="btn" data-bind="css: {'active': active_page_tab() == 3}, click: function(){change_tab(3);}">На рассмотрении</button>
+                <button type="button" class="btn"
+                        data-bind="css: {'active': active_page_tab() == 1}, click: function(){change_tab(1);}">Табличный
+                    вид
+                </button>
+                <button type="button" class="btn"
+                        data-bind="css: {'active': active_page_tab() == 2}, click: function(){change_tab(2);}">Сетевой
+                    вид
+                </button>
+                <button type="button" class="btn"
+                        data-bind="css: {'active': active_page_tab() == 3}, click: function(){change_tab(3);}">На
+                    рассмотрении
+                </button>
             </div>
             <div class="right-buttons">
-                <button class="btn" data-bind="click: toggle_all"><span class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>
+                <button class="btn" data-bind="click: toggle_all, visible: filtered_orders().length > 0 && active_page_tab() != 2"><span
+                        class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>
                     Свернуть/Развернуть всё
                 </button>
-                <button class="btn"><span class="icon-print"></span> Печать</button>
+                <button class="btn" data-bind="visible: (active_page_tab() == 2 || filtered_date_orders().length > 0)"><span class="icon-print"></span>
+                    Печать
+                </button>
             </div>
         </header>
 
-        <div class="orders-container" data-bind="visible: !init_loading(), foreach: filtered_orders">
+        <div id="full_calendar" data-bind="fullCalendar: calendar_events, visible: active_page_tab() == 2">Календарь</div>
+
+        <div data-bind="visible: active_page_tab() != 2">
+            <div class="no-orders" data-bind="visible: !init_loading() && filtered_orders().length == 0">Нет заказов
+            </div>
+
+            <div class="orders-container" data-bind="visible: !init_loading(), foreach: filtered_orders">
 
                 <article data-bind="css: {'opened': opened}">
                     <header>
@@ -71,27 +89,41 @@
                             <tbody>
                             <tr>
                                 <td class="cell-date">
-                                    <button class="btn btn-mini btn-hide" data-bind="click: toggle_open"><span class="icon-minus-sign"></span></button>
-                                    <button class="btn btn-mini btn-open" data-bind="click: toggle_open"><span class="icon-plus-sign"></span></button>
-                                    <span class="date"><span data-bind="text: date_str"></span><br><span class="day" data-bind="text: date_day_str"></span></span>
+                                    <button class="btn btn-mini btn-hide" data-bind="click: toggle_open"><span
+                                            class="icon-minus-sign"></span></button>
+                                    <button class="btn btn-mini btn-open" data-bind="click: toggle_open"><span
+                                            class="icon-plus-sign"></span></button>
+                                    <span class="date"><span data-bind="text: date_str"></span><br><span class="day"
+                                                                                                         data-bind="text: date_day_str"></span></span>
                                 </td>
                                 <td class="cell-name">
-                                    <span class="name">Заказ № <span data-bind="text: id"></span> от <span data-bind="text: date_str"></span></span>
+                                    <span class="name">Заказ № <span data-bind="text: id"></span> от <span
+                                            data-bind="text: date_str"></span></span>
 
                                     <div class="progress">
-                                        <div class="progress-value" data-bind="style: {width: progress_percent() + '%'}"><span data-bind="text: progress_text"></span></div>
+                                        <div class="progress-value"
+                                             data-bind="style: {width: progress_percent() + '%'}"><span
+                                                data-bind="text: progress_text"></span></div>
                                     </div>
                                 </td>
                                 <td class="cell-customer" data-bind="text: customer"></td>
                                 <td class="cell-price" data-bind="text: price"></td>
-                                <td class="cell-comment">
-                                    Наш монтаж в СПб,
-                                    Авиаконструкторов 2
-                                </td>
+                                <td class="cell-comment" data-bind="text: install_text"></td>
                                 <td class="cell-buttons">
-                                    <button class="btn btn-mini" data-bind="click: $root.edit_order_click"><span class="icon-edit"></span></button>
-                                    <button class="btn btn-mini btn-info"><span class="icon-info-sign"></span></button>
-                                    <button class="btn btn-mini"><span class="icon-asterisk"></span></button>
+                                    <button class="btn btn-mini" data-bind="click: $root.edit_order_click"><span
+                                            class="icon-edit"></span></button>
+                                    <button class="btn btn-mini btn-info"
+                                            data-bind="bootstrapPopover : {content : comment(), title: 'Заказ №' + id  }">
+                                        <span class="icon-info-sign"></span></button>
+                                    <div class="btn-group">
+                                        <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown"><span
+                                                class="icon-asterisk"></span></button>
+                                        <ul class="dropdown-menu" data-bind="foreach: $root.statuses">
+                                            <li><a href="#"
+                                                   data-bind="text: name, css:{'selected': id == $parent.status()}, click: function(data){$root.change_status($parent, id);}"></a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>
@@ -117,17 +149,24 @@
                             <td class="cell-name" data-bind="text: product() ? product().name : ''"></td>
                             <td class="cell-count" data-bind="text: count">1</td>
                             <td class="cell-count">0</td>
-                            <td class="cell-comment"><span data-bind="editable: comment, editableOptions: {name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveComment'}"></span></td>
-                            <td class="cell-status" data-bind="css:{'marked': state_1},click: function(data, event){$root.change_state(1, data)}"></td>
-                            <td class="cell-status" data-bind="css:{'marked': state_2},click: function(data, event){$root.change_state(2, data)}"></td>
-                            <td class="cell-status" data-bind="css:{'marked': state_3},click: function(data, event){$root.change_state(3, data)}"></td>
+                            <td class="cell-comment"><span
+                                    data-bind="editable: comment, editableOptions: {name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveComment'}"></span>
+                            </td>
+                            <td class="cell-status"
+                                data-bind="css:{'marked': state_1},click: function(data, event){$root.change_state(1, data)}"></td>
+                            <td class="cell-status"
+                                data-bind="css:{'marked': state_2},click: function(data, event){$root.change_state(2, data)}"></td>
+                            <td class="cell-status"
+                                data-bind="css:{'marked': state_3},click: function(data, event){$root.change_state(3, data)}"></td>
                         </tr>
 
                         </tbody>
                     </table>
                 </article>
 
+            </div>
         </div>
+
     </section>
 
 </div>

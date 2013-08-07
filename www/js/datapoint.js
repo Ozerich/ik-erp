@@ -93,6 +93,11 @@ App.DataPoint = {
 
     ChangeOrderProductState: function (_order_product_id, _state, _value, _callback, _errorCallback) {
         this._dataPointGate.Request('orders', 'ChangeState', {order_product_id: _order_product_id, state: _state, value: _value}, _callback, _errorCallback);
+    },
+
+    ChangeOrderStatus: function (_order_id, _status, _callback, _errorCallback) {
+        this._dataPointGate.Request('orders', 'ChangeStatus', {order_id: _order_id, status: _status}, _callback, _errorCallback);
     }
+
 
 };

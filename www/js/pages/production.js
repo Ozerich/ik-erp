@@ -23,6 +23,8 @@ function Order() {
         that.date(_date);
     };
 
+    this.status = ko.observable();
+
     this.shipping_date = ko.observable();
     this.worker = ko.observable();
     this.customer = ko.observable();
@@ -77,6 +79,16 @@ function Order() {
         }
     }, this);
 
+
+    this.install_text = ko.computed(function () {
+        if (this.need_install() == false) {
+            return 'Самовывоз';
+        }
+        else {
+            return 'Наш монтаж и т.д'
+        }
+    }, this);
+
     this.toJSON = function () {
         var productsJSON = [];
 
@@ -98,6 +110,7 @@ function Order() {
             install_phone: this.install_phone(),
             install_address: this.install_address(),
             install_comment: this.install_comment(),
+            status: this.status(),
             products: productsJSON
         };
 
@@ -183,6 +196,8 @@ function OrderFormViewModel() {
     this.install_address = ko.observable();
     this.install_comment = ko.observable();
 
+    this.status = ko.observable();
+
 
     this.products = ko.observableArray([]);
 
@@ -227,6 +242,7 @@ function OrderFormViewModel() {
             this.install_comment('');
             this.install_person('');
             this.install_phone('');
+            this.status(0);
             this.products([new OrderProduct(), new OrderProduct(), new OrderProduct()]);
         }
         else {
@@ -243,6 +259,7 @@ function OrderFormViewModel() {
             this.install_comment(order.install_comment());
             this.install_person(order.install_person());
             this.install_phone(order.install_phone());
+            this.status(order.status());
 
             this.products([]);
 
@@ -342,6 +359,8 @@ function OrderFormViewModel() {
             order.install_person(this.install_person());
             order.install_phone(this.install_phone());
 
+            order.status(this.status());
+
             order.products([]);
             ko.utils.arrayForEach(this.products(), function (product) {
                 var order_product = new OrderProduct;
@@ -400,15 +419,27 @@ function PageViewModel() {
     var today = new Date();
     this.page_date = ko.observable(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
 
+    this.statuses = [
+
+        {id: 1, name: 'В работе'},
+        {id: 2, name: 'Заказы на производство'},
+        {id: 3, name: 'Наряды в металл'},
+        {id: 4, name: 'Наряды в фанеру'},
+        {id: 5, name: 'Наряды на сборку'},
+        {id: 6, name: 'Наряды в брус'},
+        {id: 7, name: 'Отгрузка'}
+
+    ];
+
 
     this.active_page_tab = ko.observable(1);
-    this.change_tab = function(tab){
+    this.change_tab = function (tab) {
         this.active_page_tab(tab);
     };
 
     this.orders = ko.observableArray();
-    this.filtered_orders = ko.computed(function () {
 
+    this.filtered_date_orders = ko.computed(function () {
         var date_start = that.page_date();
         var date_end = new Date(that.page_date().getFullYear(), that.page_date().getMonth() + 1, 0);
 
@@ -418,6 +449,47 @@ function PageViewModel() {
                 return left.date() > right.date() ? 1 : -1;
             });
 
+    }, this);
+
+    this.filtered_orders = ko.computed(function () {
+
+
+        return ko.utils.arrayFilter(this.filtered_date_orders(), function (order) {
+
+            if (that.active_page_tab() == 3) {
+                return order.status() == 0;
+            }
+            else {
+                return order.status() > 0;
+            }
+
+        });
+
+    }, this);
+
+
+    this.calendar_events = ko.computed(function () {
+        var result = [];
+
+        ko.utils.arrayForEach(ko.utils.arrayFilter(this.orders(), function (order) {
+            return order.status() > 0;
+        }), function (order) {
+
+            var start = order.date();
+            start = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            var end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + Math.ceil(order.price() / (500000)));
+
+            result.push({
+                title: 'Заказ № ' + order.id,
+                start: start,
+                end: end,
+                allDay: false
+            });
+        });
+
+        console.log(result);
+
+        return result;
     }, this);
 
     this.products_all = [];
@@ -433,6 +505,11 @@ function PageViewModel() {
         });
 
         return result;
+    };
+
+    this.change_status = function (order, status) {
+        order.status(status);
+        App.DataPoint.ChangeOrderStatus(order.id, status);
     };
 
     this.change_state = function (num, data) {
@@ -474,6 +551,7 @@ function PageViewModel() {
                     model.setDate(App.Helper.strToDate(order.date));
                     model.shipping_date(App.Helper.strToDate(order.shipping_date));
                     model.customer(order.customer);
+                    model.status(order.status);
                     model.customer_phone(order.customer_phone);
                     model.comment(order.comment);
                     model.worker(order.worker);
@@ -552,12 +630,5 @@ $(function () {
         pageViewModel.page_date(date);
     });
 
-    $('.editable').editable({
-        url: '/post',
-        type: 'text',
-        pk: 1,
-        name: 'username',
-        title: 'Enter username'
-    });
 });
 
