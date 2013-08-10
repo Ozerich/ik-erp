@@ -221,16 +221,22 @@ ko.bindingHandlers.fullCalendar = {
 
     update: function (element, valueAccessor) {
         var events = ko.utils.unwrapObservable(valueAccessor());
-        $(element).empty();
 
         setTimeout(function () {
+            $(element).empty().fullCalendar('destroy');
             $(element).fullCalendar({
                 events: events,
                 header: [],
                 firstDay: 1,
-                contentHeight: 750,
+                contentHeight: 570,
                 dayNamesShort: ['Вск', 'Пн', 'Вт', 'Ср', 'Чтв', 'Пт', 'Сб'],
-                timeFormat: ''
+                timeFormat: '',
+                dayRender: function (date, cell) {
+                    $(cell).find('> div').prepend('<div class="price-block"><div class="price-edit"><input type="text" value="'+pageViewModel.getDateCost(date)+'"><a href="#" class="btn btn-mini btn-save"><i class="icon-ok"></i></a><a href="#" class="btn btn-mini btn-cancel"><i class="icon-remove"></i></a></div><div class="price-view">'+pageViewModel.getDateCost(date) +'р.</div></div>');
+                },
+                eventAfterRender: function (event, element, view) {
+                    $(element).css('top', parseInt($(element).css('top')) + 20 + 'px');
+                }
             });
         }, 0);
     }

@@ -54,7 +54,7 @@ App.Helper = {
     },
 
     strToDate: function (str) {
-        return new Date(str.substr(0, 4), str.substr(5, 2), str.substr(8, 2));
+        return new Date(str.substr(0, 4), parseInt(str.substr(5, 2)) - 1, str.substr(8, 2));
     },
 
     getMonthName: function (date) {

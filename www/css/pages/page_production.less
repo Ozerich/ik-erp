@@ -153,16 +153,61 @@
   #content {
     margin-left: 236px;
 
-    #full_calendar {
-      table tbody tr:nth-child(2n+1) td {
-        background: #FCFCFC;
+    #calendar_tab {
+      position: relative;
+      #full_calendar {
+
+        table tbody tr:nth-child(2n+1) td {
+          background: #FCFCFC;
+        }
+        table tbody tr:nth-child(2n) td {
+          background: #f6f6f6;
+        }
+        table tbody tr td.fc-state-highlight { //  background: #ffc;
+        }
+
+        .fc-event {
+          background: #54A1E6;
+          color: #fff;
+          border: 1px solid #fff;
+        }
+
+        .price-block {
+          width: 100px;
+          max-width: 100px;
+          min-width: 100px;
+
+          margin: 5px 0 0 2px;
+          position: absolute;
+          height: 25px;
+          line-height: 25px;
+          display: block;
+
+          .price-view {
+            color: #b70000;
+            background: #fffd80;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+          }
+          .price-edit {
+            display: none;
+            input {
+              width: 60px;
+              height: 25px;
+              line-height: 25px;
+              text-align: center;
+              float: left;
+            }
+            .btn{
+              padding: 1px 2px;
+            }
+          }
+        }
       }
-      table tbody tr:nth-child(2n) td {
-        background: #f6f6f6;
-      }
-      table tbody tr td.fc-state-highlight {
-      //  background: #ffc;
-      }
+
     }
 
     .no-orders {

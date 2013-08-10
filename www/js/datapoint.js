@@ -97,6 +97,14 @@ App.DataPoint = {
 
     ChangeOrderStatus: function (_order_id, _status, _callback, _errorCallback) {
         this._dataPointGate.Request('orders', 'ChangeStatus', {order_id: _order_id, status: _status}, _callback, _errorCallback);
+    },
+
+    UpdateDateCost: function (_date_str, _cost, _callback, _errorCallback) {
+        this._dataPointGate.Request('orders', 'UpdateDateCost', {date: _date_str, cost: _cost}, _callback, _errorCallback);
+    },
+
+    CalculateDates: function (_month, _year, _callback, _errorCallback) {
+        this._dataPointGate.Request('orders', 'CalculateDates', {month: _month, year: _year}, _callback, _errorCallback);
     }
 
 

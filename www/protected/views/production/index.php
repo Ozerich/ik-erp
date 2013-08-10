@@ -52,8 +52,7 @@
         <header data-bind="visible: !init_loading() && (active_page_tab() == 2 || filtered_date_orders().length > 0)">
             <div class="btn-group">
                 <button type="button" class="btn"
-                        data-bind="css: {'active': active_page_tab() == 1}, click: function(){change_tab(1);}">Табличный
-                    вид
+                        data-bind="css: {'active': active_page_tab() == 1}, click: function(){change_tab(1);}">В работе
                 </button>
                 <button type="button" class="btn"
                         data-bind="css: {'active': active_page_tab() == 2}, click: function(){change_tab(2);}">Сетевой
@@ -64,18 +63,25 @@
                     рассмотрении
                 </button>
             </div>
+            <button class="btn" data-bind="visible: active_page_tab() == 2, click: calculate_dates">Рассчитать</button>
             <div class="right-buttons">
-                <button class="btn" data-bind="click: toggle_all, visible: filtered_orders().length > 0 && active_page_tab() != 2"><span
+                <button class="btn"
+                        data-bind="click: toggle_all, visible: filtered_orders().length > 0 && active_page_tab() != 2"><span
                         class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>
                     Свернуть/Развернуть всё
                 </button>
-                <button class="btn" data-bind="visible: (active_page_tab() == 2 || filtered_orders().length > 0)"><span class="icon-print"></span>
+                <button class="btn" data-bind="visible: (active_page_tab() == 2 || filtered_orders().length > 0)"><span
+                        class="icon-print"></span>
                     Печать
                 </button>
             </div>
         </header>
 
-        <div id="full_calendar" data-bind="fullCalendar: calendar_events, visible: active_page_tab() == 2">Календарь</div>
+        <div id="calendar_tab" data-bind="visible: active_page_tab()==2 && !init_loading()">
+            <div id="full_calendar" data-bind="fullCalendar: calendar_events,visible: active_page_tab()==2">
+            </div>
+
+        </div>
 
         <div data-bind="visible: active_page_tab() != 2">
             <div class="no-orders" data-bind="visible: !init_loading() && filtered_orders().length == 0">Нет заказов

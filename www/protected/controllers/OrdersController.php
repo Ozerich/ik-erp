@@ -25,6 +25,16 @@ class OrdersController extends Controller
             $result[] = $order;
         }
 
+        $day_costs = array();
+        foreach (DayCost::model()->findAll() as $day_cost) {
+            $day_costs[$day_cost->date] = $day_cost->cost;
+        }
+
+        $result = array(
+            'orders' => $result,
+            'day_costs' => $day_costs
+        );
+
         echo json_encode($result);
         Yii::app()->end();
     }
@@ -56,6 +66,10 @@ class OrdersController extends Controller
         $order->install_comment = Yii::app()->request->getPost('install_comment');
         $order->install_person = Yii::app()->request->getPost('install_person');
         $order->install_phone = Yii::app()->request->getPost('install_phone');
+
+        if ($order->isNewRecord) {
+            $order->date_start = $order->fact_shipping_date = $order->date;
+        }
 
         $order->save();
 
@@ -141,6 +155,96 @@ class OrdersController extends Controller
 
         $order->status = $status;
         $order->save();
+
+        Yii::app()->end();
+    }
+
+    public function actionUpdateDateCost()
+    {
+        $date = Yii::app()->request->getPost('date');
+        $cost = Yii::app()->request->getPost('cost');
+
+        $model = DayCost::model()->findByAttributes(array(
+            'date' => $date
+        ));
+        if (!$model) {
+            $model = new DayCost;
+            $model->date = $date;
+        }
+
+        $model->cost = $cost;
+        $model->save();
+
+        Yii::app()->end();
+    }
+
+
+    public function actionCalculateDates()
+    {
+        $month = Yii::app()->request->getPost('month');
+        $year = Yii::app()->request->getPost('year');
+
+       // $month = Yii::app()->request->getQuery('month');
+     //   $year = Yii::app()->request->getQuery('year');
+
+        $start_date = date('Y-m-d', mktime(0, 0, 0, $month, 1, $year));
+        $end_date = date('Y-m-d', mktime(0, 0, 0, $month + 1, 0, $year));
+
+        $criteria = new CDbCriteria();
+        $criteria->order = 'date ASC';
+
+        $orders = array();
+        foreach (Order::model()->findAll($criteria) as $_order) {
+            if (strtotime($_order->date) >= strtotime($start_date) && strtotime($_order->date) <= strtotime($end_date)) {
+                $orders[] = $_order;
+            }
+        }
+
+        $weights = DayCost::All();
+
+        if (count($orders) > 0) {
+            $current_date = strtotime($orders[0]->date_start);
+            $order_ind = 0;
+            $weight_last = 0;
+
+            while ($order_ind < count($orders)) {
+                $current_order = $orders[$order_ind];
+
+                $current_order->date_start = date('Y-m-d', $current_date);
+                $current_order->save();
+
+                $order_weight = 0;
+                while (true) {
+                    $day_cost = isset($weights[date('Y-m-d', $current_date)]) ? $weights[date('Y-m-d', $current_date)] : 0;
+
+                    if ($weight_last) {
+                        $day_cost = $weight_last;
+                        $weight_last = 0;
+                    }
+
+                    if ($day_cost == 0) {
+                        $current_order->date_end = date('Y-m-d', $current_date);
+                        $current_order->save();
+                        $weight_last = 0;
+                        break;
+                    } else {
+                        $order_weight += $day_cost;
+                        if ($order_weight >= $current_order->getPrice()) {
+                            $weight_last = $order_weight - $current_order->price;
+                            $current_order->fact_shipping_date = date('Y-m-d', $current_date);
+                            $current_order->save();
+                            break;
+                        } else {
+                            $current_date += 86400;
+                        }
+                    }
+                }
+
+                $order_ind++;
+            }
+        }
+
+        echo json_encode(array());
 
         Yii::app()->end();
     }

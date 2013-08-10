@@ -25,7 +25,9 @@ function Order() {
 
     this.status = ko.observable();
 
+    this.date_start = ko.observable();
     this.shipping_date = ko.observable();
+    this.fact_shipping_date = ko.observable();
     this.worker = ko.observable();
     this.customer = ko.observable();
     this.customer_phone = ko.observable();
@@ -184,6 +186,7 @@ function OrderFormViewModel() {
 
     this.date = ko.observable();
     this.shipping_date = ko.observable();
+    this.fact_shipping_date = ko.observable();
     this.worker = ko.observable();
     this.division = ko.observable();
     this.customer = ko.observable();
@@ -232,6 +235,7 @@ function OrderFormViewModel() {
             this.id(null);
             this.date(new Date());
             this.shipping_date('');
+            this.fact_shipping_date('');
             this.worker('');
             this.customer('');
             this.division(1);
@@ -249,6 +253,7 @@ function OrderFormViewModel() {
             this.id(order.id);
             this.date(order.date());
             this.shipping_date(order.shipping_date());
+            this.fact_shipping_date(order.fact_shipping_date());
             this.worker(order.worker());
             this.customer(order.customer());
             this.division(order.division());
@@ -347,6 +352,7 @@ function OrderFormViewModel() {
             order.id = this.id();
             order.setDate(this.date());
             order.shipping_date(this.shipping_date());
+            order.fact_shipping_date(this.fact_shipping_date());
             order.worker(this.worker());
             order.division(this.division());
             order.customer(this.customer());
@@ -437,6 +443,48 @@ function PageViewModel() {
         this.active_page_tab(tab);
     };
 
+
+    this.date_costs = ko.observableArray();
+
+    this.saveDateCost = function (date, cost) {
+        if (App.Helper.isString(date)) {
+            App.DataPoint.UpdateDateCost(date, cost);
+
+            date = new Date(parseInt(date.substr(0, 4)), parseInt(date.substr(5, 2)) - 1, parseInt(date.substr(8, 2)));
+
+            var found = false;
+            var costs = this.date_costs();
+            for (var i in costs) {
+                if (costs[i].date.getFullYear() == date.getFullYear() && costs[i].date.getMonth() == date.getMonth() && costs[i].date.getDate() == date.getDate()) {
+                    costs[i].cost = cost;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                costs.push({
+                        date: date,
+                        cost: cost
+                    }
+                );
+            }
+
+
+            this.date_costs(costs);
+        }
+    };
+
+    this.getDateCost = function (date) {
+        var costs = this.date_costs();
+        for (var i in costs) {
+            if (costs[i].date.getFullYear() == date.getFullYear() && costs[i].date.getMonth() == date.getMonth() && costs[i].date.getDate() == date.getDate()) {
+                return parseInt(costs[i].cost);
+            }
+        }
+        return 0;
+    };
+
     this.orders = ko.observableArray();
 
     this.filtered_date_orders = ko.computed(function () {
@@ -475,22 +523,33 @@ function PageViewModel() {
             return order.status() > 0;
         }), function (order) {
 
-            var start = order.date();
+            var start = order.date_start();
             start = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-            var end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + Math.ceil(order.price() / (500000)));
-
+            var end = order.fact_shipping_date();
+            end = new Date(end.getFullYear(), end.getMonth(), end.getDate());
             result.push({
                 title: 'Заказ № ' + order.id,
                 start: start,
-                end: end,
-                allDay: false
+                end: end
             });
         });
 
-        console.log(result);
-
         return result;
     }, this);
+
+
+    this.calendar_date = ko.computed(function(){
+        return this.page_date();
+    }, this);
+
+    this.calculate_dates = function () {
+
+        App.DataPoint.CalculateDates(this.calendar_date().getMonth() + 1, this.calendar_date().getFullYear(), function(){
+            that.load();
+        });
+
+    };
+
 
     this.products_all = [];
 
@@ -531,8 +590,14 @@ function PageViewModel() {
 
     };
 
-    this.init_loading = ko.observable(true);
+    this.init_loading = ko.observable(false);
     this.load = function () {
+        this.init_loading(true);
+
+        that.products_all = [];
+        that.orders([]);
+        that.date_costs([]);
+
         App.DataPoint.GetAllProducts(function (data) {
 
             for (var i in data) {
@@ -542,14 +607,16 @@ function PageViewModel() {
             App.DataPoint.GetAllOrders(function (data) {
                 that.init_loading(false);
 
-                for (var i in data) {
-                    var order = data[i];
+                for (var i in data.orders) {
+                    var order = data.orders[i];
 
                     var model = new Order();
 
                     model.id = parseInt(order.id);
                     model.setDate(App.Helper.strToDate(order.date));
                     model.shipping_date(App.Helper.strToDate(order.shipping_date));
+                    model.fact_shipping_date(App.Helper.strToDate(order.fact_shipping_date));
+                    model.date_start(App.Helper.strToDate(order.date_start));
                     model.customer(order.customer);
                     model.status(order.status);
                     model.customer_phone(order.customer_phone);
@@ -579,6 +646,13 @@ function PageViewModel() {
                     }
 
                     that.orders.push(model);
+                }
+
+                for (var date in data.day_costs) {
+                    that.date_costs.push({
+                        date: new Date(parseInt(date.substr(0, 4)), parseInt(date.substr(5, 2)) - 1, parseInt(date.substr(8, 2))),
+                        cost: data.day_costs[date]
+                    });
                 }
 
             });
@@ -629,6 +703,42 @@ $(function () {
     $('#calendar').Calendar(function (date) {
         pageViewModel.page_date(date);
     });
+
+
+    $('#full_calendar').on('click', '.price-view',function () {
+        var day = $(this).parents('td');
+        day.find('.price-edit').show();
+        day.find('.price-view').hide();
+
+        day.find('.price-edit input').focus();
+
+        return false;
+    }).on('click', '.btn-cancel',function () {
+            var day = $(this).parents('td');
+
+            day.find('.price-edit input').val(parseInt(day.find('.price-view').text()));
+
+            day.find('.price-edit').hide();
+            day.find('.price-view').show();
+
+            return false;
+        }).on('click', '.btn-save', function () {
+            var day = $(this).parents('td');
+
+            var value = parseInt(day.find('.price-edit input').val());
+            if (isNaN(value)) {
+                alert('Введите число');
+                return false;
+            }
+
+            day.find('.price-view').text(value + ' р.');
+            pageViewModel.saveDateCost(day.data('date'), value);
+
+            day.find('.price-edit').hide();
+            day.find('.price-view').show();
+
+            return false;
+        });
 
 });
 

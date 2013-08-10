@@ -1,13 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.11.1deb2
+-- version 4.0.1
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Авг 07 2013 г., 21:57
--- Версия сервера: 5.5.31
--- Версия PHP: 5.4.4-14+deb7u2
+-- Время создания: Авг 10 2013 г., 20:54
+-- Версия сервера: 5.5.25
+-- Версия PHP: 5.3.13
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -17,8 +17,21 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- База данных: `ikerp`
+-- База данных: `ik_erp`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `day_costs`
+--
+
+CREATE TABLE IF NOT EXISTS `day_costs` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date` date NOT NULL,
+  `cost` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -31,6 +44,8 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `status` int(11) NOT NULL,
   `date` date NOT NULL,
   `shipping_date` date NOT NULL,
+  `date_start` date NOT NULL,
+  `fact_shipping_date` date NOT NULL,
   `division` int(11) NOT NULL,
   `worker` varchar(255) NOT NULL,
   `customer` varchar(255) NOT NULL,
@@ -42,14 +57,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `install_address` varchar(255) DEFAULT NULL,
   `install_comment` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Дамп данных таблицы `orders`
---
-
-INSERT INTO `orders` (`id`, `status`, `date`, `shipping_date`, `division`, `worker`, `customer`, `customer_phone`, `comment`, `need_install`, `install_person`, `install_phone`, `install_address`, `install_comment`) VALUES
-(1, 3, '2013-07-10', '2013-07-24', 1, 'Георгий Долидзе', 'Виталий Озерский', '+7 (111) 111-11-11', 'Вот на этом заказе мы заработаем денег и купим по каену и всё будет хорошо :)', 0, '', '', '', '');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -68,16 +76,7 @@ CREATE TABLE IF NOT EXISTS `order_products` (
   `state_2` tinyint(1) NOT NULL,
   `state_3` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
-
---
--- Дамп данных таблицы `order_products`
---
-
-INSERT INTO `order_products` (`id`, `order_id`, `product_id`, `pos`, `count`, `comment`, `state_1`, `state_2`, `state_3`) VALUES
-(1, 1, 2, 1, 7, 'Вася, где детали? не знаю', 0, 0, 0),
-(2, 1, 3, 2, 5, '', 1, 1, 1),
-(3, 1, 4, 3, 6, 'ну вот совсем немноженько осталось', 0, 0, 0);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 

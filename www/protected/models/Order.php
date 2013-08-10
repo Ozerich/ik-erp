@@ -35,4 +35,12 @@ class Order extends CActiveRecord
             $order_product->delete();
         }
     }
+
+    public function getPrice(){
+        $result = 0;
+        foreach($this->order_products as $order_product){
+            $result += (int)$order_product->count * (int)$order_product->product->price;
+        }
+        return $result;
+    }
 }
