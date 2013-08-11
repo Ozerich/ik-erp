@@ -408,8 +408,8 @@ function OrderFormViewModel() {
                     });
 
                     order.opened(_order.opened());
-					order.date_start(_order.date_start);
-					order.fact_shipping_date(_order.fact_shipping_date);
+					order.date_start(_order.date_start());
+					order.fact_shipping_date(_order.fact_shipping_date());
 
                     pageViewModel.orders.replace(_order, order);
                 }
