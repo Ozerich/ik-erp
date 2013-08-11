@@ -6,7 +6,7 @@ App.DataPointGate = function () {
             var param = _params[i];
 
             if (param instanceof Date) {
-                param = param.getFullYear() + '-' + App.Helper.to2(param.getMonth()) + '-' + App.Helper.to2(param.getDate());
+                param = param.getFullYear() + '-' + App.Helper.to2(param.getMonth() + 1) + '-' + App.Helper.to2(param.getDate());
             }
 
             if (typeof param === 'boolean') {

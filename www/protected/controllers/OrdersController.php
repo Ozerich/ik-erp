@@ -184,8 +184,8 @@ class OrdersController extends Controller
         $month = Yii::app()->request->getPost('month');
         $year = Yii::app()->request->getPost('year');
 
-       // $month = Yii::app()->request->getQuery('month');
-     //   $year = Yii::app()->request->getQuery('year');
+        // $month = Yii::app()->request->getQuery('month');
+        //   $year = Yii::app()->request->getQuery('year');
 
         $start_date = date('Y-m-d', mktime(0, 0, 0, $month, 1, $year));
         $end_date = date('Y-m-d', mktime(0, 0, 0, $month + 1, 0, $year));
@@ -245,6 +245,23 @@ class OrdersController extends Controller
         }
 
         echo json_encode(array());
+
+        Yii::app()->end();
+    }
+
+
+    public function actionSaveOrderComment()
+    {
+        $comment = Yii::app()->request->getPost('value');
+        $pk = Yii::app()->request->getPost('pk');
+
+        $order = Order::model()->findByPk($pk);
+        if(!$order){
+            throw new CHttpException(404);
+        }
+
+        $order->comment = $comment;
+        $order->save();
 
         Yii::app()->end();
     }

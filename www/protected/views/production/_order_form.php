@@ -6,11 +6,11 @@
     </div>
     <div class="row-fluid">
 
-        <ul class="nav nav-tabs">
+<!--        <ul class="nav nav-tabs">
             <li class="active"><a href="#order_params">Параметры</a></li>
             <li><a href="#order_install">Монтаж</a></li>
             <li><a href="#order_products">Продукция</a></li>
-        </ul>
+        </ul>-->
 
         <div class="tab-content">
             <div class="tab-pane active" id="order_params">
@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            <div class="tab-pane" id="order_install">
+            <div class="tab-pane active" id="order_install">
                 <div class="block-fluid">
                     <div class="row-form">
                         <div class="span4">Монтаж:</div>
@@ -107,7 +107,7 @@
 
             </div>
 
-            <div class="tab-pane" id="order_products">
+            <div class="tab-pane active" id="order_products">
                 <div class="table-wr">
                     <table>
                         <thead>
@@ -137,12 +137,10 @@
                                     style="width: 150px"></select>
                             </td>
                             <td class="cell-count">
-                                <input type="text" name="spi" data-bind="spinner: count, spinnerOptions: { min: 1, max: 100 }"
-                                       autocomplete="off"
-                                       role="spinbutton">
+                                <input type="text" maxlength="3" data-bind="value: count" autocomplete="off">
                             </td>
                             <td class="cell-comment">
-                                <textarea data-bind="value: comment"></textarea>
+                                <input type="text" data-bind="value: comment"/>
                             </td>
                             <td class="cell-price">
                                 <span data-bind="text: price"></span>

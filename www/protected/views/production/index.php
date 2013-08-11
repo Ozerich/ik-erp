@@ -116,20 +116,25 @@
                                 <td class="cell-price" data-bind="text: price"></td>
                                 <td class="cell-comment" data-bind="text: install_text"></td>
                                 <td class="cell-buttons">
-                                    <button class="btn btn-mini" data-bind="click: $root.edit_order_click"><span
-                                            class="icon-edit"></span></button>
-                                    <button class="btn btn-mini btn-info"
-                                            data-bind="bootstrapPopover : {content : comment(), title: 'Заказ №' + id  }">
-                                        <span class="icon-info-sign"></span></button>
-                                    <div class="btn-group">
-                                        <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown"><span
-                                                class="icon-asterisk"></span></button>
-                                        <ul class="dropdown-menu" data-bind="foreach: $root.statuses">
-                                            <li><a href="#"
-                                                   data-bind="text: name, css:{'selected': id == $parent.status()}, click: function(data){$root.change_status($parent, id);}"></a>
-                                            </li>
-                                        </ul>
+                                    <div class="buttons">
+                                        <button class="btn btn-mini" data-bind="click: $root.edit_order_click"><span
+                                                class="icon-edit"></span></button>
+                                        <button class="btn btn-mini btn-info"><span class="icon-info-sign"></span>
+                                        </button>
+
+                                        <div class="btn-group">
+                                            <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown"><span
+                                                    class="icon-asterisk"></span></button>
+                                            <ul class="dropdown-menu" data-bind="foreach: $root.statuses">
+                                                <li><a href="#"
+                                                       data-bind="text: name, css:{'selected': id == $parent.status()}, click: function(data){$root.change_status($parent, id);}"></a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
+                                    <input type="text" class="comment-editable"
+                                           data-bind="editable: comment, editableOptions: {placement:'left', name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveOrderComment'}">
+
                                 </td>
                             </tr>
                             </tbody>

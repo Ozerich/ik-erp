@@ -356,7 +356,26 @@
             &.cell-buttons {
               border-left: 0;
               max-width: 70px;
+              min-width: 70px;
+              position: relative;
               text-align: right;
+
+              .buttons{
+                position: absolute;
+                right: 10px;
+                bottom: 10px;
+                z-index: 1009;
+              }
+
+              input.editable{
+                position: absolute;
+                top: 18px;
+                width: 1px;
+                right: 66px;
+                padding: 0;
+                height: 1px;
+              }
+
               .btn-info {
                 .gradient(#ffc900, #f89809, #ffc900);
               }
@@ -399,6 +418,12 @@
 
             span {
               cursor: pointer;
+              max-width: 237px;
+              display: block;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+              border-bottom: none;
             }
           }
         }
@@ -448,7 +473,18 @@
 
 #order_form {
   width: 950px;
+  margin-top: 15px;
+  top: 0;
   margin-left: -425px;
+
+  .row-form{
+    padding: 4px 15px;
+  }
+
+  .row-fluid{
+    max-height: 650px;
+    overflow-y: auto;
+  }
   .nav-tabs {
     margin: 0 10px;
     > li > a {
@@ -502,7 +538,7 @@
         }
 
         &.cell-count, &.cell-price {
-          max-width: 50px;
+          max-width: 30px;
           input {
             text-align: center;
           }
