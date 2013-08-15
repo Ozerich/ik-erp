@@ -6,18 +6,7 @@ function Order() {
     this.id = 0;
 
     this.date = ko.observable();
-    this.date_str = ko.computed(function () {
-        if (!this.date()) {
-            return ''
-        }
-        return this.date().getDate() + ' ' + App.Helper.getMonthName(this.date());
-    }, this);
-    this.date_day_str = ko.computed(function () {
-        if (!this.date()) {
-            return ''
-        }
-        return App.Helper.getWeekDayName(this.date());
-    }, this);
+
 
     this.setDate = function (_date) {
         that.date(_date);
@@ -48,6 +37,45 @@ function Order() {
         that.opened(!that.opened());
     };
 
+    this.date_str = ko.computed(function () {
+        if (!this.date()) {
+            return ''
+        }
+        return this.date().getDate() + ' ' + App.Helper.getMonthName(this.date());
+    }, this);
+
+    this.shipping_date_str = ko.computed(function () {
+        if (!this.shipping_date()) {
+            return ''
+        }
+        return this.shipping_date().getDate() + ' ' + App.Helper.getMonthName(this.shipping_date());
+    }, this);
+    this.shipping_date_day_str = ko.computed(function () {
+        if (!this.shipping_date()) {
+            return ''
+        }
+        return App.Helper.getWeekDayName(this.shipping_date());
+    }, this);
+
+    this.division_text = ko.computed(function(){
+        if(this.division() == 1){
+            return 'Красивый город Спб';
+        }
+        else if(this.division() == 2){
+            return 'Красивый город Москва';
+        }
+        else if(this.division() == 3){
+            return 'Петроплан';
+        }
+        else{
+            return '';
+        }
+    }, this);
+
+    this.customer_text = ko.computed(function(){
+        return this.division_text() + ', ' + this.customer();
+    }, this);
+
     this.price = ko.computed(function () {
         var result = 0;
 
@@ -63,12 +91,18 @@ function Order() {
         var sum = 0;
 
         ko.utils.arrayForEach(this.products(), function (product) {
-            if (product.state_1() && product.state_2() && product.state_3()) {
+            if (product.state_1()) {
+                sum++;
+            }
+            if (product.state_2()) {
+                sum++;
+            }
+            if (product.state_3()) {
                 sum++;
             }
         });
 
-        return Math.round(100 * sum / this.products().length);
+        return Math.round(100 * sum / this.products().length / 3);
     }, this);
 
     this.progress_text = ko.computed(function () {
@@ -87,8 +121,20 @@ function Order() {
             return 'Самовывоз';
         }
         else {
-            return 'Наш монтаж и т.д'
+            return 'Монтаж: ' + this.install_address();
         }
+    }, this);
+
+    this.install_tooltip = ko.computed(function(){
+        if(this.need_install() == false){
+            return '';
+        }
+        else{
+            return 'ФИО Ответственного: ' + this.install_person() + '<br>' +
+                'Телефон:' + this.install_phone() + '<br>' +
+                'Комментарий: ' + App.Helper.nl2br(this.install_comment());
+        }
+
     }, this);
 
     this.toJSON = function () {
@@ -247,7 +293,7 @@ function OrderFormViewModel() {
             this.install_person('');
             this.install_phone('');
             this.status(0);
-            this.products([new OrderProduct(), new OrderProduct(), new OrderProduct()]);
+            this.products([]);
         }
         else {
             this.id(order.id);
@@ -296,6 +342,9 @@ function OrderFormViewModel() {
          wnd.find('.nav-tabs a:first').trigger('click');
          */
 
+		 for(var i in this.errors){
+			this.errors[i]('');
+		 }
 
 
         $('input:checkbox').uniform();
@@ -306,7 +355,6 @@ function OrderFormViewModel() {
 
 
     this.errors = {
-        date_error: ko.observable(''),
         shipping_date_error: ko.observable(''),
         customer_error: ko.observable(''),
         worker_error: ko.observable('')
@@ -316,10 +364,6 @@ function OrderFormViewModel() {
 
         for (var i in this.errors) {
             this.errors[i]('');
-        }
-
-        if (!this.date()) {
-            this.errors.date_error('Дата не выбрана');
         }
 
         if (!this.shipping_date()) {
@@ -334,7 +378,7 @@ function OrderFormViewModel() {
             this.errors.worker_error('Ответственный не выбран');
         }
 
-        var first_tab_inputs = ['date', 'shipping_date', 'customer', 'worker'];
+        var first_tab_inputs = ['shipping_date', 'customer', 'worker'];
         for (var i in first_tab_inputs) {
             var error = this.errors[first_tab_inputs[i] + '_error'];
             if (error()) {
@@ -397,8 +441,8 @@ function OrderFormViewModel() {
                 }
 
                 if (is_new_order) {
-					order.date_start(order.date());
-					order.fact_shipping_date(order.date());
+					order.date_start(order.shipping_date());
+					order.fact_shipping_date(order.shipping_date());
                     pageViewModel.orders.push(order);
                     order.opened(false);
                 }
@@ -494,7 +538,7 @@ function PageViewModel() {
     this.orders = ko.observableArray();
 
     this.filtered_date_orders = ko.computed(function () {
-        var date_start = that.page_date();
+        var date_start = new Date(that.page_date().getFullYear(), that.page_date().getMonth(), 1);
         var date_end = new Date(that.page_date().getFullYear(), that.page_date().getMonth() + 1, 0);
 
         return ko.utils.arrayFilter(this.orders(),function (order) {
@@ -526,7 +570,7 @@ function PageViewModel() {
         var result = [];
 
         ko.utils.arrayForEach(ko.utils.arrayFilter(this.orders(), function (order) {
-            return order.status() > 0;
+            return true;
         }), function (order) {
 
             var start = order.date_start();
@@ -536,7 +580,8 @@ function PageViewModel() {
             result.push({
                 title: 'Заказ № ' + order.id,
                 start: start,
-                end: end
+                end: end,
+                backgroundColor: order.status() == 0 ? '#aaa' : '#54A1E6'
             });
         });
 
@@ -710,6 +755,7 @@ $(function () {
         pageViewModel.page_date(date);
     });
 
+    $('[data-toggle=tooltip]').tooltip();
 
     $('#full_calendar').on('click', '.price-view',function () {
         var day = $(this).parents('td');
@@ -746,7 +792,7 @@ $(function () {
             return false;
         });
 
-    $('.orders-container').on('click', '.btn-info', function(event){
+    $('.orders-container').on('click', '.btn-comment', function(event){
         $(this).parent().parent().find('.comment-editable').editable('show');
         event.stopPropagation();
         return false;

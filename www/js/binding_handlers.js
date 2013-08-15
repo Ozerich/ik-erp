@@ -226,10 +226,16 @@ ko.bindingHandlers.fullCalendar = {
             $(element).empty().fullCalendar('destroy');
             $(element).fullCalendar({
                 events: events,
-                header: [],
+                header: {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: ''
+                },
                 firstDay: 1,
                 contentHeight: 570,
                 dayNamesShort: ['Вск', 'Пн', 'Вт', 'Ср', 'Чтв', 'Пт', 'Сб'],
+                monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль',
+                    'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
                 timeFormat: '',
                 dayRender: function (date, cell) {
                     $(cell).find('> div').prepend('<div class="price-block"><div class="price-edit"><input type="text" value="'+pageViewModel.getDateCost(date)+'"><a href="#" class="btn btn-mini btn-save"><i class="icon-ok"></i></a><a href="#" class="btn btn-mini btn-cancel"><i class="icon-remove"></i></a></div><div class="price-view">'+pageViewModel.getDateCost(date) +'р.</div></div>');

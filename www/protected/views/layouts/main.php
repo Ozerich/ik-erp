@@ -32,6 +32,7 @@
     <script src="/js/thirdparty/fullcalendar.min.js"></script>
 
     <script src="/js/thirdparty/knockout-2.3.0.js"></script>
+    <script src="/js/thirdparty/knockout-bootstrap.min.js"></script>
     <script src="/js/binding_handlers.js"></script>
 
     <script src="/js/init.js"></script>

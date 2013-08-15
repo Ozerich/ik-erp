@@ -57,12 +57,36 @@ App.Helper = {
         return new Date(str.substr(0, 4), parseInt(str.substr(5, 2)) - 1, str.substr(8, 2));
     },
 
+    dateToStr: function (date) {
+        if (!date) {
+            return '';
+        }
+        return this.to2(date.getDate()) + '.' + this.to2(date.getMonth() + 1) + '.' + date.getFullYear();
+    },
+
     getMonthName: function (date) {
         return this.MONTHS[date.getMonth()];
     },
 
     getWeekDayName: function (date) {
         return this.SHORT_WEEKDAYS[date.getDay() == 0 ? 6 : date.getDay() - 1];
+    },
+
+    formatMoney: function (_val) {
+        _val = parseInt(_val);
+        if (isNaN(_val)) {
+            _val = 0;
+        }
+
+        var groupPattern = /(\d)(?=(\d{3})+$)/g;
+        _val = _val.toString().replace(groupPattern, '$1 ');
+        _val = _val.replace(/,$/, '');
+        return _val;
+    },
+
+    nl2br: function (str, is_xhtml) {
+        var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
+        return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
     }
 
 };

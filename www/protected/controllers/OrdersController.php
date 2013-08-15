@@ -68,7 +68,7 @@ class OrdersController extends Controller
         $order->install_phone = Yii::app()->request->getPost('install_phone');
 
         if ($order->isNewRecord) {
-            $order->date_start = $order->fact_shipping_date = $order->date;
+            $order->date_start = $order->fact_shipping_date = $order->shipping_date;
         }
 
         $order->save();
@@ -223,7 +223,7 @@ class OrdersController extends Controller
                     }
 
                     if ($day_cost == 0) {
-                        $current_order->date_end = date('Y-m-d', $current_date);
+                        $current_order->fact_shipping_date = date('Y-m-d', $current_date);
                         $current_order->save();
                         $weight_last = 0;
                         break;

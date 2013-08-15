@@ -2,26 +2,24 @@
      style="display: none;">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Новый заказ (№ 12)</h3>
+        <h3 id="myModalLabel" data-bind="text: id() ? 'Заказ №' + id() : 'Новый заказ'"></h3>
     </div>
     <div class="row-fluid">
 
-<!--        <ul class="nav nav-tabs">
-            <li class="active"><a href="#order_params">Параметры</a></li>
-            <li><a href="#order_install">Монтаж</a></li>
-            <li><a href="#order_products">Продукция</a></li>
-        </ul>-->
+        <!--        <ul class="nav nav-tabs">
+                    <li class="active"><a href="#order_params">Параметры</a></li>
+                    <li><a href="#order_install">Монтаж</a></li>
+                    <li><a href="#order_products">Продукция</a></li>
+                </ul>-->
 
         <div class="tab-content">
             <div class="tab-pane active" id="order_params">
 
                 <div class="block-fluid">
-                    <div class="row-form" data-bind="css: {'error': errors.date_error().length}">
-                        <div class="span4">Дата:</div>
+                    <div class="row-form">
+                        <div class="span4">Дата размещения:</div>
                         <div class="span8">
-                            <input type="text" class="datepicker"
-                                   data-bind="datepicker: date, datepickerOptions: {}">
-                            <span class="bottom" data-bind="text: errors.date_error()"></span>
+                            <span data-bind="text: App.Helper.dateToStr(date())"></span>
                         </div>
                     </div>
                     <div class="row-form" data-bind="css: {'error': errors.shipping_date_error().length}">
@@ -29,13 +27,17 @@
                         <div class="span8">
                             <input type="text" class="datepicker" class="datepicker"
                                    data-bind="datepicker: shipping_date, datepickerOptions: { minDate: new Date() }">
+                            <span data-bind="visible: id()">&nbsp;&nbsp;&nbsp;Рассчетная дата отгрузки:
+                            <span data-bind="text: App.Helper.dateToStr(fact_shipping_date())"></span>
+                                </span>
                             <span class="bottom" data-bind="text: errors.shipping_date_error()"></span>
                         </div>
                     </div>
                     <div class="row-form">
-                        <div class="span4">Наименование подразделения:</div>
+                        <div class="span4">Дистрибьютор:</div>
                         <div class="span8">
-                            <select data-bind="options: divisions, value: division, optionsValue: 'id', optionsText: 'name'"></select>
+                            <select
+                                data-bind="options: divisions, value: division, optionsValue: 'id', optionsText: 'name'"></select>
                         </div>
                     </div>
                     <div class="row-form" data-bind="css: {'error': errors.worker_error().length}">
@@ -143,10 +145,10 @@
                                 <input type="text" data-bind="value: comment"/>
                             </td>
                             <td class="cell-price">
-                                <span data-bind="text: price"></span>
+                                <span data-bind="text: App.Helper.formatMoney(price())"></span>
                             </td>
                             <td class="cell-amount">
-                                <span data-bind="text: total"></span>
+                                <span data-bind="text: App.Helper.formatMoney(total())"></span>
                             </td>
                             <td class="cell-actions">
                                 <button class="btn btn-mini" data-bind="click: $root.delete_production_click"><span
@@ -166,7 +168,10 @@
     </div>
     <div class="modal-footer">
         <img src="/img/loaders/1d_2.gif" data-bind="visible: loading">
-        <button class="btn btn-primary" data-bind="visible: !loading(), click: submit_order, text: id() ? 'Сохранить' : 'Добавить заказ'"></button>
-        <button class="btn btn-warning" data-bind="visible: !loading()" data-dismiss="modal" aria-hidden="true">Закрыть</button>
+        <button class="btn btn-primary"
+                data-bind="visible: !loading(), click: submit_order, text: id() ? 'Сохранить' : 'Добавить заказ'"></button>
+        <button class="btn btn-warning" data-bind="visible: !loading()" data-dismiss="modal" aria-hidden="true">
+            Закрыть
+        </button>
     </div>
 </div>

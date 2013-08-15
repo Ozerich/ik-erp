@@ -156,6 +156,12 @@
     #calendar_tab {
       position: relative;
       #full_calendar {
+      .fc-button{
+        line-height: 30px;
+        font-size: 30px;
+        margin: 0 5px 3px;
+      }
+
 
         table tbody tr:nth-child(2n+1) td {
           background: #FCFCFC;
@@ -184,8 +190,8 @@
           display: block;
 
           .price-view {
-            color: #b70000;
-            background: #fffd80;
+            color: #fff;
+            background: #2a6d90;
             border: 1px solid #aaa;
             border-radius: 5px;
             text-align: center;
@@ -201,7 +207,7 @@
               text-align: center;
               float: left;
             }
-            .btn{
+            .btn {
               padding: 1px 2px;
             }
           }
@@ -246,6 +252,10 @@
             .popover {
               text-align: left;
               color: #000;
+              width: 600px;
+              .editable-input {
+                width: 485px;
+              }
             }
 
             .dropdown-menu {
@@ -351,6 +361,9 @@
 
             &.cell-comment {
               border-right: 0;
+              span{
+                cursor: pointer;
+              }
             }
 
             &.cell-buttons {
@@ -360,24 +373,27 @@
               position: relative;
               text-align: right;
 
-              .buttons{
-                position: absolute;
-                right: 10px;
-                bottom: 10px;
-                z-index: 1009;
+              .buttons {
+              /*position: absolute;
+              right: 10px;
+              bottom: 10px;
+              z-index: 1009;
+              */
               }
 
-              input.editable{
+              input.editable {
                 position: absolute;
                 top: 18px;
                 width: 1px;
-                right: 66px;
+                right: 77px;
                 padding: 0;
                 height: 1px;
               }
 
-              .btn-info {
-                .gradient(#ffc900, #f89809, #ffc900);
+              .btn-comment {
+                &.filled {
+                  .gradient(#ffc900, #f89809, #ffc900);
+                }
               }
             }
 
@@ -477,12 +493,12 @@
   top: 0;
   margin-left: -425px;
 
-  .row-form{
+  .row-form {
     padding: 4px 15px;
   }
 
-  .row-fluid{
-    max-height: 650px;
+  .row-fluid {
+    max-height: 500px;
     overflow-y: auto;
   }
   .nav-tabs {

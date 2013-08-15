@@ -99,8 +99,8 @@
                                             class="icon-minus-sign"></span></button>
                                     <button class="btn btn-mini btn-open" data-bind="click: toggle_open"><span
                                             class="icon-plus-sign"></span></button>
-                                    <span class="date"><span data-bind="text: date_str"></span><br><span class="day"
-                                                                                                         data-bind="text: date_day_str"></span></span>
+                                    <span class="date"><span data-bind="text: shipping_date_str"></span><br><span class="day"
+                                                                                                         data-bind="text: shipping_date_day_str"></span></span>
                                 </td>
                                 <td class="cell-name">
                                     <span class="name">Заказ № <span data-bind="text: id"></span> от <span
@@ -112,14 +112,16 @@
                                                 data-bind="text: progress_text"></span></div>
                                     </div>
                                 </td>
-                                <td class="cell-customer" data-bind="text: customer"></td>
-                                <td class="cell-price" data-bind="text: price"></td>
-                                <td class="cell-comment" data-bind="text: install_text"></td>
+                                <td class="cell-customer" data-bind="text: customer_text"></td>
+                                <td class="cell-price" data-bind="text: App.Helper.formatMoney(price())"></td>
+                                <td class="cell-comment">
+                                    <span data-bind="text: install_text, tooltip: {title: install_tooltip, html: true }"></span>
+                                </td>
                                 <td class="cell-buttons">
                                     <div class="buttons">
                                         <button class="btn btn-mini" data-bind="click: $root.edit_order_click"><span
                                                 class="icon-edit"></span></button>
-                                        <button class="btn btn-mini btn-info"><span class="icon-info-sign"></span>
+                                        <button class="btn btn-mini btn-comment" data-bind="css: {'filled': comment().length > 0}"><span class="icon-info-sign"></span>
                                         </button>
 
                                         <div class="btn-group">
@@ -158,7 +160,7 @@
                         <tr data-bind="css:{'yellow': comment().length > 0}">
                             <td class="cell-articul" data-bind="text: product() ? product().articul : ''"></td>
                             <td class="cell-name" data-bind="text: product() ? product().name : ''"></td>
-                            <td class="cell-count" data-bind="text: count">1</td>
+                            <td class="cell-count" data-bind="text: count"></td>
                             <td class="cell-count">0</td>
                             <td class="cell-comment"><span
                                     data-bind="editable: comment, editableOptions: {name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveComment'}"></span>

@@ -205,6 +205,7 @@ Version: 3.4.1 Timestamp: Thu Jun 27 18:02:10 PDT 2013
 
 .select2-container .select2-choice .select2-arrow {
     display: inline-block;
+	display: none;
     width: 18px;
     height: 100%;
     position: absolute;
