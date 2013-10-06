@@ -2,6 +2,7 @@
 
 class OrderProduct extends CActiveRecord
 {
+
     public static function model($className = __CLASS__)
     {
         return parent::model($className);
@@ -25,6 +26,7 @@ class OrderProduct extends CActiveRecord
         return array(
             'order' => array(self::BELONGS_TO, 'Order', 'order_id'),
             'product' => array(self::BELONGS_TO, 'Product', 'product_id'),
+            'done' => array(self::HAS_MANY, 'OrdersDone', array('order_id'=>'order_id','product_id'=>'product_id')),
         );
     }
 

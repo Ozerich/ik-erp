@@ -1,4 +1,4 @@
-<div id="order_form" class="modal hide fade" role="dialog" aria-hidden="true"
+<div id="order_form" class="modal hide fade" aria-hidden="true"
      style="display: none;">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -170,7 +170,7 @@
         <img src="/img/loaders/1d_2.gif" data-bind="visible: loading">
         <button class="btn btn-primary"
                 data-bind="visible: !loading(), click: submit_order, text: id() ? 'Сохранить' : 'Добавить заказ'"></button>
-        <button class="btn btn-warning" data-bind="visible: !loading()" data-dismiss="modal" aria-hidden="true">
+        <button id="closeForm" class="btn btn-warning" data-bind="visible: !loading()" data-dismiss="modal" aria-hidden="true">
             Закрыть
         </button>
     </div>

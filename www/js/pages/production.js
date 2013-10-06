@@ -1,3 +1,10 @@
+$(document).keydown(function(e) {
+    if( e.keyCode === 27 ) {
+        $('#closeForm').click();
+        $('.modal-footer input').click();
+    }
+});
+
 var pageViewModel, orderFormViewModel;
 
 function Order() {
@@ -13,7 +20,6 @@ function Order() {
     };
 
     this.status = ko.observable();
-
     this.date_start = ko.observable();
     this.shipping_date = ko.observable();
     this.fact_shipping_date = ko.observable();
@@ -72,9 +78,7 @@ function Order() {
         }
     }, this);
 
-    this.customer_text = ko.computed(function(){
-        return this.division_text() + ', ' + this.customer();
-    }, this);
+
 
     this.price = ko.computed(function () {
         var result = 0;
@@ -88,21 +92,33 @@ function Order() {
 
 
     this.progress_percent = ko.computed(function () {
-        var sum = 0;
+        var sum = 0, all = 0;
 
         ko.utils.arrayForEach(this.products(), function (product) {
-            if (product.state_1()) {
-                sum++;
-            }
-            if (product.state_2()) {
-                sum++;
-            }
-            if (product.state_3()) {
-                sum++;
-            }
+			var weight = product.count() * product.price();
+			all += weight;
+			
+			if(product.state_1() && product.state_2() && product.state_3()){
+				sum += weight;
+			}
+			else{
+				if (product.state_1()) {
+					sum += (weight / 3);
+				}
+				if (product.state_2()) {
+					sum += (weight / 3);
+				}
+				if (product.state_3()) {
+					sum += (weight / 3);
+				}
+			}
         });
-
-        return Math.round(100 * sum / this.products().length / 3);
+		
+		var result = Math.round(100 * sum / all);
+		if(result == 100 && sum != all){
+			result = 99;
+		}
+        return result;
     }, this);
 
     this.progress_text = ko.computed(function () {
@@ -116,6 +132,16 @@ function Order() {
     }, this);
 
 
+	this.customer_text = ko.computed(function(){
+        return this.division_text() + ', ' + this.customer();
+    }, this);
+
+    this.customer_tooltip = ko.computed(function(){
+        var comment = this.comment();
+        return 'Телефон заказчика:' + this.customer_phone() + '<br>' +
+            'Комментарий:<pre>' + comment + '</pre>';
+    }, this);
+	
     this.install_text = ko.computed(function () {
         if (this.need_install() == false) {
             return 'Самовывоз';
@@ -475,8 +501,24 @@ function PageViewModel() {
     var today = new Date();
     this.page_date = ko.observable(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
 
-    this.statuses = [
+    /*this.statuses = [
 
+        {id: 1, name: 'В работе'},
+        {id: 2, name: 'Заказы на производство'},
+        {id: 3, name: 'Наряды в металл'},
+        {id: 4, name: 'Наряды в фанеру'},
+        {id: 5, name: 'Наряды на сборку'},
+        {id: 6, name: 'Наряды в брус'},
+        {id: 7, name: 'Отгрузка'}
+
+    ];*/
+    this.active_page_tab = ko.observable(1);
+    this.change_tab = function (tab) {
+        this.active_page_tab(tab);
+    };
+    this.statuses = [
+        //{id: (this.active_page_tab()==1)?0:1, name: (this.active_page_tab()==1)?'Отменить заказ':'В работе'},
+        {id: 0, name: 'Отменить заказ'},
         {id: 1, name: 'В работе'},
         {id: 2, name: 'Заказы на производство'},
         {id: 3, name: 'Наряды в металл'},
@@ -488,10 +530,7 @@ function PageViewModel() {
     ];
 
 
-    this.active_page_tab = ko.observable(1);
-    this.change_tab = function (tab) {
-        this.active_page_tab(tab);
-    };
+
 
 
     this.date_costs = ko.observableArray();
@@ -542,9 +581,9 @@ function PageViewModel() {
         var date_end = new Date(that.page_date().getFullYear(), that.page_date().getMonth() + 1, 0);
 
         return ko.utils.arrayFilter(this.orders(),function (order) {
-            return order.date() >= date_start && order.date() <= date_end;
+            return order.date() <= date_end;
         }).sort(function (left, right) {
-                return left.date() > right.date() ? 1 : -1;
+                return left.date() < right.date() ? 1 : -1;
             });
 
     }, this);
@@ -799,3 +838,98 @@ $(function () {
     });
 });
 
+$(document).ready(function(){
+    var orderForm = $('#order_form');
+
+
+
+    var printAll = $('.printAllOrders');
+    var printSelect = $('.printSelectOrders');
+    var print = $('.print');
+
+    printAll.click(function(){
+        $('.cell-buttons').fadeOut();
+        $('.checkPrint').attr('checked','checked');
+        $('.print-buttons').fadeIn();
+    });
+
+    printAll.click(function(){
+        $('.cell-buttons').fadeOut();
+        $('.checkPrint').attr('checked','checked');
+        $('.print-buttons').fadeIn();
+    });
+
+    print.click(function(){
+        $('#printForm').submit();
+    });
+
+    $(document).on('click', 'li:contains("Отгрузка")', function(event){
+        var id = $(this).parent().parent().parent().parent().parent().find('.cell-name span.name span').html();
+        window.location = "/production/index/done/"+id;
+        event.stopPropagation();
+        return false;
+    });
+
+    $(document).on('click', '.dateBtn', function(event){
+        event.stopPropagation();
+        return false;
+    });
+
+    $(document).on('click', '.replaceIt', function(event){
+        var id = $(this).parent().find('span.getId').text();
+        $.ajax({
+            url: '/production/ajaxDate',
+            method: 'post',
+            data: {
+                'id': id,
+            },
+            beforeSend: function() {
+            },
+            success: function () {
+                location.reload()
+            },
+
+        });
+        event.stopPropagation();
+        return false;
+    });
+
+    $(document).on('click', '.orderDate', function(event){
+        var form = $('#date_form');
+        form.find('input.id').val(($(this).parent().find('.order_id').text()));
+        form.find('input.newData').val('12.3.2013');
+        form.fadeIn();
+
+        event.stopPropagation();
+        return false;
+    });
+
+    $(document).on('click', '#saveDateForm', function(event){
+        var id = $(this).parent().parent().find('input.id').val();
+
+        var date = $(this).parent().parent().find('input.newData').val();
+        $.ajax({
+            url: '/production/ajaxNewDate',
+            method: 'post',
+            data: {
+                'id': id,
+                'date': date,
+            },
+            beforeSend: function() {
+            },
+            success: function () {
+                location.reload()
+            },
+
+        });
+        event.stopPropagation();
+        return false;
+    });
+
+    $(document).on('click', '#closeDateForm', function(event){
+        $('#date_form').fadeOut();
+        event.stopPropagation();
+        return false;
+    });
+
+});

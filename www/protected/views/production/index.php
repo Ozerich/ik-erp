@@ -1,3 +1,58 @@
+<style>
+    pre {
+        border: none;
+        margin: 0;
+        padding: 0;
+        background: none;
+        font-size: 10px;
+        font-family: Arial, sans-serif;
+        line-height: normal;
+    }
+
+    .orange {
+        color: #ffd704 !important;
+    }
+
+    .none {
+        display: none !important;
+
+    }
+
+    .normal {
+        display: block;
+    }
+
+    td {
+        position: relative;
+    }
+
+    .dateBtn {
+        float: right;
+        margin-top: -16px !important;
+    }
+
+    .dataModal {
+        display: none;
+        position: absolute;
+        background: #2a6d90;
+        border: 1px solid black;
+        z-index: 10000;
+        width: 300px;
+        text-align: center;
+    }
+
+    .dataModal button {
+        float: none !important;
+    }
+
+    .dateBtn:hover+.dataModal {
+        display: block;
+    }
+
+    .dataModal:hover {
+        display: block;
+    }
+</style>
 <div id="page">
     <aside>
         <a href="#" class="btn btn-success btn-new-order" id="btn_new_order"
@@ -64,16 +119,23 @@
                 </button>
             </div>
             <button class="btn" data-bind="visible: active_page_tab() == 2, click: calculate_dates">Рассчитать</button>
-            <div class="right-buttons">
+            <div class="right-buttons" style="margin-right: 30px;">
                 <button class="btn"
                         data-bind="click: toggle_all, visible: filtered_orders().length > 0 && active_page_tab() != 2"><span
                         class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>
                     Свернуть/Развернуть всё
                 </button>
-                <button class="btn" data-bind="visible: (active_page_tab() == 2 || filtered_orders().length > 0)"><span
+                <div class="btn-group">
+                <button class="btn dropdown-toggle" data-toggle="dropdown" data-bind="visible: (active_page_tab() == 2 || filtered_orders().length > 0)"><span
                         class="icon-print"></span>
-                    Печать
-                </button>
+                    Печать</button>
+                    <ul class="dropdown-menu">
+                        <li><a class="printAllOrders">Выделить все</a></li>
+                        <li><a class="printAllOrders">Выбрать нужное</a></li>
+                        <li><a class="print">Печать выбранного</a></li>
+                    </ul>
+                </div>
+
             </div>
         </header>
 
@@ -82,29 +144,38 @@
             </div>
 
         </div>
-
+<form method="POST" action="/production/print" id="printForm">
         <div data-bind="visible: active_page_tab() != 2">
             <div class="no-orders" data-bind="visible: !init_loading() && filtered_orders().length == 0">Нет заказов
             </div>
 
             <div class="orders-container" data-bind="visible: !init_loading(), foreach: filtered_orders">
-
                 <article data-bind="css: {'opened': opened}">
                     <header>
                         <table>
                             <tbody>
-                            <tr>
+                             <tr>
                                 <td class="cell-date">
                                     <button class="btn btn-mini btn-hide" data-bind="click: toggle_open"><span
                                             class="icon-minus-sign"></span></button>
                                     <button class="btn btn-mini btn-open" data-bind="click: toggle_open"><span
                                             class="icon-plus-sign"></span></button>
-                                    <span class="date"><span data-bind="text: shipping_date_str"></span><br><span class="day"
-                                                                                                         data-bind="text: shipping_date_day_str"></span></span>
-                                </td>
-                                <td class="cell-name">
-                                    <span class="name">Заказ № <span data-bind="text: id"></span> от <span
-                                            data-bind="text: date_str"></span></span>
+                                    <span class="date"><span data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span><br><span class="day"
+                                                                                                         data-bind="text: shipping_date_day_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span>
+                                    <button class="dateBtn btn btn-mini"
+                                            data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) == App.Helper.dateToStr(shipping_date())}"></button>
+                                        <div class="dataModal">
+                                            <span style="display: none" class="getId" data-bind="text: id"></span>
+
+                                            <span data-bind="text: 'Расчетная дата «' + App.Helper.dateToStr(fact_shipping_date()) + '», заменить?'"></span><br>
+                                                <button class="replaceIt btn btn-mini">Да</button>
+                                        </div>
+
+                                    </span>
+                                     </td>
+                                <td class="cell-name" data-bind="css: {'orange': App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date()), 'rev': App.Helper.dateToStr(fact_shipping_date())!=1}">
+                                    <span class="name">Заказ № <span data-bind="text: id" class="order_id"></span> от <span
+                                            data-bind="text: date_str" class="orderDate"></span></span>
 
                                     <div class="progress">
                                         <div class="progress-value"
@@ -112,7 +183,9 @@
                                                 data-bind="text: progress_text"></span></div>
                                     </div>
                                 </td>
-                                <td class="cell-customer" data-bind="text: customer_text"></td>
+                                <td class="cell-customer">
+									<span data-bind="text: customer_text, tooltip: {title: customer_tooltip, html: true}"></span>
+								</td>
                                 <td class="cell-price" data-bind="text: App.Helper.formatMoney(price())"></td>
                                 <td class="cell-comment">
                                     <span data-bind="text: install_text, tooltip: {title: install_tooltip, html: true }"></span>
@@ -129,14 +202,17 @@
                                                     class="icon-asterisk"></span></button>
                                             <ul class="dropdown-menu" data-bind="foreach: $root.statuses">
                                                 <li><a href="#"
-                                                       data-bind="text: name, css:{'selected': id == $parent.status()}, click: function(data){$root.change_status($parent, id);}"></a>
+                                                       data-bind="text: name, value: id, css:{'selected': id == $parent.status()}, click: function(data){$root.change_status($parent, id);}"></a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                     <input type="text" class="comment-editable"
-                                           data-bind="editable: comment, editableOptions: {placement:'left', name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveOrderComment'}">
+                                           data-bind="editable: comment, editableOptions: {type: 'textarea', placement:'left', name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveOrderComment'}">
 
+                                </td>
+                                <td class="print-buttons" style="display: none; width: 100px;">
+                                    Напечатать? <input name="printArr[]" type="checkbox" class="checkPrint"  data-bind="value: id" />
                                 </td>
                             </tr>
                             </tbody>
@@ -148,7 +224,7 @@
                             <th class="cell-articul">Арт.</th>
                             <th class="cell-name">Наименование</th>
                             <th class="cell-count">Кол-во</th>
-                            <th class="cell-count">Отгружено</th>
+                            <!--<th class="cell-count">Отгружено</th>-->
                             <th class="cell-comment">Комментарии</th>
                             <th class="cell-status">Ф</th>
                             <th class="cell-status">М</th>
@@ -161,7 +237,7 @@
                             <td class="cell-articul" data-bind="text: product() ? product().articul : ''"></td>
                             <td class="cell-name" data-bind="text: product() ? product().name : ''"></td>
                             <td class="cell-count" data-bind="text: count"></td>
-                            <td class="cell-count">0</td>
+                            <!--<td class="cell-count done">0</td>-->
                             <td class="cell-comment"><span
                                     data-bind="editable: comment, editableOptions: {name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveComment'}"></span>
                             </td>
@@ -179,11 +255,19 @@
 
             </div>
         </div>
-
+</form>
     </section>
 
 </div>
 <? $this->renderPartial('_order_form'); ?>
+<? $this->renderPartial('_date_form'); ?>
+<?
+if (isset($_GET['done']))
+{
+    $order = Order::model()->findByPk((int)$_GET['done']);
+    $this->renderPartial('_done_form',array('id'=>(int)$_GET['done'],'order'=>$order));
+}
+?>
 
 <script src="/js/components/calendar.js"></script>
 <script src="/js/pages/production.js"></script>

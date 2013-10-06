@@ -14,6 +14,14 @@
     <title><?= !empty($this->pageTitle) ? $this->pageTitle : 'Система управления предприятием'?> – «Красивый город»</title>
 
     <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap.min.css">
+    <?php
+    if ($this->pageId == 'catalog')
+    {
+    ?>
+    <link rel="stylesheet" type="text/css" href="/css/catalog-tables.css">
+    <?php
+    }
+    ?>
     <link rel="stylesheet" type="text/css" href="/css/thirdparty/jquery-ui/jquery-ui-1.9.1.custom.min.css">
 
     <link rel="stylesheet/less" type="text/less" href="/css/layout.less">
@@ -55,7 +63,12 @@
 <header>
     <nav>
         <ul>
-            <li><a href="/production">Производство</a></li>
+            <li><a href="/production">Производство</a>
+                <ul>
+                    <li><a href="/production">В работе</a></li>
+                    <li><a href="/payments">Оплата труда</a></li>
+                </ul>
+            </li>
             <li><a href="/finance">Финансы</a></li>
             <li><a href="/provision">Снабжение</a></li>
             <li><a href="/catalog">Каталог изделий</a></li>

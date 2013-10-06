@@ -5238,3 +5238,20 @@ a.label:hover, a.badge:hover {
 .affix {
     position: fixed
 }
+
+ul li ul {
+    display: none;
+    position: absolute;
+    top: 30px;
+    width: 118px;
+    z-index: 1000;
+    left: 0px;
+}
+
+ul li ul li {
+    width: 118px;
+}
+
+ul li:hover ul {
+    display: block;
+}
