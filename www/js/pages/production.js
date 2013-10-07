@@ -1,10 +1,3 @@
-$(document).keydown(function(e) {
-    if( e.keyCode === 27 ) {
-        $('#closeForm').click();
-        $('.modal-footer input').click();
-    }
-});
-
 var pageViewModel, orderFormViewModel;
 
 function Order() {
@@ -12,8 +5,8 @@ function Order() {
 
     this.id = 0;
 
-    this.date = ko.observable();
 
+    this.date = ko.observable();
 
     this.setDate = function (_date) {
         that.date(_date);
@@ -23,6 +16,7 @@ function Order() {
     this.date_start = ko.observable();
     this.shipping_date = ko.observable();
     this.fact_shipping_date = ko.observable();
+    this.date_status = ko.observable();
     this.worker = ko.observable();
     this.customer = ko.observable();
     this.customer_phone = ko.observable();
@@ -63,21 +57,20 @@ function Order() {
         return App.Helper.getWeekDayName(this.shipping_date());
     }, this);
 
-    this.division_text = ko.computed(function(){
-        if(this.division() == 1){
+    this.division_text = ko.computed(function () {
+        if (this.division() == 1) {
             return 'Красивый город Спб';
         }
-        else if(this.division() == 2){
+        else if (this.division() == 2) {
             return 'Красивый город Москва';
         }
-        else if(this.division() == 3){
+        else if (this.division() == 3) {
             return 'Петроплан';
         }
-        else{
+        else {
             return '';
         }
     }, this);
-
 
 
     this.price = ko.computed(function () {
@@ -95,29 +88,29 @@ function Order() {
         var sum = 0, all = 0;
 
         ko.utils.arrayForEach(this.products(), function (product) {
-			var weight = product.count() * product.price();
-			all += weight;
-			
-			if(product.state_1() && product.state_2() && product.state_3()){
-				sum += weight;
-			}
-			else{
-				if (product.state_1()) {
-					sum += (weight / 3);
-				}
-				if (product.state_2()) {
-					sum += (weight / 3);
-				}
-				if (product.state_3()) {
-					sum += (weight / 3);
-				}
-			}
+            var weight = product.count() * product.price();
+            all += weight;
+
+            if (product.state_1() && product.state_2() && product.state_3()) {
+                sum += weight;
+            }
+            else {
+                if (product.state_1()) {
+                    sum += (weight / 3);
+                }
+                if (product.state_2()) {
+                    sum += (weight / 3);
+                }
+                if (product.state_3()) {
+                    sum += (weight / 3);
+                }
+            }
         });
-		
-		var result = Math.round(100 * sum / all);
-		if(result == 100 && sum != all){
-			result = 99;
-		}
+
+        var result = Math.round(100 * sum / all);
+        if (result == 100 && sum != all) {
+            result = 99;
+        }
         return result;
     }, this);
 
@@ -132,16 +125,16 @@ function Order() {
     }, this);
 
 
-	this.customer_text = ko.computed(function(){
+    this.customer_text = ko.computed(function () {
         return this.division_text() + ', ' + this.customer();
     }, this);
 
-    this.customer_tooltip = ko.computed(function(){
+    this.customer_tooltip = ko.computed(function () {
         var comment = this.comment();
         return 'Телефон заказчика:' + this.customer_phone() + '<br>' +
             'Комментарий:<pre>' + comment + '</pre>';
     }, this);
-	
+
     this.install_text = ko.computed(function () {
         if (this.need_install() == false) {
             return 'Самовывоз';
@@ -151,11 +144,11 @@ function Order() {
         }
     }, this);
 
-    this.install_tooltip = ko.computed(function(){
-        if(this.need_install() == false){
+    this.install_tooltip = ko.computed(function () {
+        if (this.need_install() == false) {
             return '';
         }
-        else{
+        else {
             return 'ФИО Ответственного: ' + this.install_person() + '<br>' +
                 'Телефон:' + this.install_phone() + '<br>' +
                 'Комментарий: ' + App.Helper.nl2br(this.install_comment());
@@ -259,6 +252,7 @@ function OrderFormViewModel() {
     this.date = ko.observable();
     this.shipping_date = ko.observable();
     this.fact_shipping_date = ko.observable();
+    this.date_status = ko.observable();
     this.worker = ko.observable();
     this.division = ko.observable();
     this.customer = ko.observable();
@@ -308,6 +302,7 @@ function OrderFormViewModel() {
             this.date(new Date());
             this.shipping_date('');
             this.fact_shipping_date('');
+            this.date_status('');
             this.worker('');
             this.customer('');
             this.division(1);
@@ -326,6 +321,7 @@ function OrderFormViewModel() {
             this.date(order.date());
             this.shipping_date(order.shipping_date());
             this.fact_shipping_date(order.fact_shipping_date());
+            this.date_status(order.date_status());
             this.worker(order.worker());
             this.customer(order.customer());
             this.division(order.division());
@@ -361,20 +357,11 @@ function OrderFormViewModel() {
 
         this.loading(false);
 
-        /*    wnd.find('.nav-tabs a').on('click', function (e) {
-         e.preventDefault();
-         $(this).tab('show');
-         });
-         wnd.find('.nav-tabs a:first').trigger('click');
-         */
-
-		 for(var i in this.errors){
-			this.errors[i]('');
-		 }
-
+        for (var i in this.errors) {
+            this.errors[i]('');
+        }
 
         $('input:checkbox').uniform();
-
 
         wnd.modal();
     };
@@ -467,8 +454,8 @@ function OrderFormViewModel() {
                 }
 
                 if (is_new_order) {
-					order.date_start(order.shipping_date());
-					order.fact_shipping_date(order.shipping_date());
+                    order.date_start(order.shipping_date());
+                    order.fact_shipping_date(order.shipping_date());
                     pageViewModel.orders.push(order);
                     order.opened(false);
                 }
@@ -478,8 +465,8 @@ function OrderFormViewModel() {
                     });
 
                     order.opened(_order.opened());
-					order.date_start(_order.date_start());
-					order.fact_shipping_date(_order.fact_shipping_date());
+                    order.date_start(_order.date_start());
+                    order.fact_shipping_date(_order.fact_shipping_date());
 
                     pageViewModel.orders.replace(_order, order);
                 }
@@ -501,19 +488,29 @@ function PageViewModel() {
     var today = new Date();
     this.page_date = ko.observable(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
 
+    this.hasSidebar = ko.observable(true);
+
     /*this.statuses = [
 
-        {id: 1, name: 'В работе'},
-        {id: 2, name: 'Заказы на производство'},
-        {id: 3, name: 'Наряды в металл'},
-        {id: 4, name: 'Наряды в фанеру'},
-        {id: 5, name: 'Наряды на сборку'},
-        {id: 6, name: 'Наряды в брус'},
-        {id: 7, name: 'Отгрузка'}
+     {id: 1, name: 'В работе'},
+     {id: 2, name: 'Заказы на производство'},
+     {id: 3, name: 'Наряды в металл'},
+     {id: 4, name: 'Наряды в фанеру'},
+     {id: 5, name: 'Наряды на сборку'},
+     {id: 6, name: 'Наряды в брус'},
+     {id: 7, name: 'Отгрузка'}
 
-    ];*/
+     ];*/
     this.active_page_tab = ko.observable(1);
     this.change_tab = function (tab) {
+
+        if(tab == 2){
+            that.hasSidebar(false);
+        }
+        else{
+            that.hasSidebar(true);
+        }
+
         this.active_page_tab(tab);
     };
     this.statuses = [
@@ -528,9 +525,6 @@ function PageViewModel() {
         {id: 7, name: 'Отгрузка'}
 
     ];
-
-
-
 
 
     this.date_costs = ko.observableArray();
@@ -589,8 +583,6 @@ function PageViewModel() {
     }, this);
 
     this.filtered_orders = ko.computed(function () {
-
-
         return ko.utils.arrayFilter(this.filtered_date_orders(), function (order) {
 
             if (that.active_page_tab() == 3) {
@@ -608,15 +600,23 @@ function PageViewModel() {
     this.calendar_events = ko.computed(function () {
         var result = [];
 
-        ko.utils.arrayForEach(ko.utils.arrayFilter(this.orders(), function (order) {
+        ko.utils.arrayForEach(ko.utils.arrayFilter(this.orders(),function (order) {
             return true;
-        }), function (order) {
+        }).sort(function (a, b) {
+                if (a.status() != b.status()) {
+                    return a.status() < b.status() ? 1 : -1;
+                }
+                return a.date_status() < b.date_status() ? 1 : -1;
+            }), function (order) {
 
             var start = order.date_start();
             start = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+
             var end = order.fact_shipping_date();
             end = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
             result.push({
+                model: order,
                 title: 'Заказ № ' + order.id,
                 start: start,
                 end: end,
@@ -628,13 +628,13 @@ function PageViewModel() {
     }, this);
 
 
-    this.calendar_date = ko.computed(function(){
+    this.calendar_date = ko.computed(function () {
         return this.page_date();
     }, this);
 
     this.calculate_dates = function () {
 
-        App.DataPoint.CalculateDates(this.calendar_date().getMonth() + 1, this.calendar_date().getFullYear(), function(){
+        App.DataPoint.CalculateDates(this.calendar_date().getMonth() + 1, this.calendar_date().getFullYear(), function () {
             that.load();
         });
 
@@ -706,9 +706,10 @@ function PageViewModel() {
                     model.setDate(App.Helper.strToDate(order.date));
                     model.shipping_date(App.Helper.strToDate(order.shipping_date));
                     model.fact_shipping_date(App.Helper.strToDate(order.fact_shipping_date));
+                    model.date_status(App.Helper.strToDate(order.date_status));
                     model.date_start(App.Helper.strToDate(order.date_start));
                     model.customer(order.customer);
-                    model.status(order.status);
+                    model.status(+order.status);
                     model.customer_phone(order.customer_phone);
                     model.comment(order.comment);
                     model.worker(order.worker);
@@ -779,6 +780,23 @@ function PageViewModel() {
         orderFormViewModel.setOrder(order);
         orderFormViewModel.open();
     };
+
+    this.updateCalendarSummary = function(){
+        var $summary = $('.calendar-summary-container').find('.calendar-summary-rows').empty();
+        $('.fc-week').each(function () {
+            var days_count = 0, total = 0, average, height = $(this).height() - 2;
+            $(this).find('.fc-day').each(function () {
+                days_count++;
+                total += parseInt($(this).find('.price-view').text().replace(' ', ''));
+            });
+            average = Math.round(total / days_count);
+            $summary.append('<div class="row" style="line-height: ' + height + 'px;height: ' + height + 'px">' +
+                '<div class="cell cell-total">' + total + ' р.</div>' +
+                '<div class="cell cell-average">' + average + ' р.</div>' +
+                '</div>'
+            );
+        });
+    };
 }
 
 
@@ -825,57 +843,58 @@ $(function () {
             day.find('.price-view').text(value + ' р.');
             pageViewModel.saveDateCost(day.data('date'), value);
 
+            pageViewModel.updateCalendarSummary();
+
             day.find('.price-edit').hide();
             day.find('.price-view').show();
 
             return false;
         });
 
-    $('.orders-container').on('click', '.btn-comment', function(event){
+    $('.orders-container').on('click', '.btn-comment', function (event) {
         $(this).parent().parent().find('.comment-editable').editable('show');
         event.stopPropagation();
         return false;
     });
 });
 
-$(document).ready(function(){
+$(document).ready(function () {
     var orderForm = $('#order_form');
-
 
 
     var printAll = $('.printAllOrders');
     var printSelect = $('.printSelectOrders');
     var print = $('.print');
 
-    printAll.click(function(){
+    printAll.click(function () {
         $('.cell-buttons').fadeOut();
-        $('.checkPrint').attr('checked','checked');
+        $('.checkPrint').attr('checked', 'checked');
         $('.print-buttons').fadeIn();
     });
 
-    printAll.click(function(){
+    printAll.click(function () {
         $('.cell-buttons').fadeOut();
-        $('.checkPrint').attr('checked','checked');
+        $('.checkPrint').attr('checked', 'checked');
         $('.print-buttons').fadeIn();
     });
 
-    print.click(function(){
+    print.click(function () {
         $('#printForm').submit();
     });
 
-    $(document).on('click', 'li:contains("Отгрузка")', function(event){
+    $(document).on('click', 'li:contains("Отгрузка")', function (event) {
         var id = $(this).parent().parent().parent().parent().parent().find('.cell-name span.name span').html();
-        window.location = "/production/index/done/"+id;
+        window.location = "/production/index/done/" + id;
         event.stopPropagation();
         return false;
     });
 
-    $(document).on('click', '.dateBtn', function(event){
+    $(document).on('click', '.dateBtn', function (event) {
         event.stopPropagation();
         return false;
     });
 
-    $(document).on('click', '.replaceIt', function(event){
+    $(document).on('click', '.replaceIt', function (event) {
         var id = $(this).parent().find('span.getId').text();
         $.ajax({
             url: '/production/ajaxDate',
@@ -883,18 +902,18 @@ $(document).ready(function(){
             data: {
                 'id': id,
             },
-            beforeSend: function() {
+            beforeSend: function () {
             },
             success: function () {
                 location.reload()
-            },
+            }
 
         });
         event.stopPropagation();
         return false;
     });
 
-    $(document).on('click', '.orderDate', function(event){
+    $(document).on('click', '.orderDate', function (event) {
         var form = $('#date_form');
         form.find('input.id').val(($(this).parent().find('.order_id').text()));
         form.find('input.newData').val('12.3.2013');
@@ -904,7 +923,7 @@ $(document).ready(function(){
         return false;
     });
 
-    $(document).on('click', '#saveDateForm', function(event){
+    $(document).on('click', '#saveDateForm', function (event) {
         var id = $(this).parent().parent().find('input.id').val();
 
         var date = $(this).parent().parent().find('input.newData').val();
@@ -915,7 +934,7 @@ $(document).ready(function(){
                 'id': id,
                 'date': date,
             },
-            beforeSend: function() {
+            beforeSend: function () {
             },
             success: function () {
                 location.reload()
@@ -926,10 +945,17 @@ $(document).ready(function(){
         return false;
     });
 
-    $(document).on('click', '#closeDateForm', function(event){
+    $(document).on('click', '#closeDateForm', function (event) {
         $('#date_form').fadeOut();
         event.stopPropagation();
         return false;
+    });
+
+    $(document).on('keydown', function (e) {
+        if (e.keyCode === 27) {
+            $('#closeForm').click();
+            $('.modal-footer input').click();
+        }
     });
 
 });

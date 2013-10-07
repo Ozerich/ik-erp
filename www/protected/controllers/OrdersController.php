@@ -69,6 +69,7 @@ class OrdersController extends Controller
 
         if ($order->isNewRecord) {
             $order->date_start = $order->fact_shipping_date = $order->shipping_date;
+            $order->date_status = date('Y-m-d h:i:s');
         }
 
         $order->save();
@@ -153,6 +154,7 @@ class OrdersController extends Controller
             throw new CHttpException(404);
         }
 
+        $order->date_status = date('Y-m-d h:i:s');
         $order->status = $status;
         $order->save();
 

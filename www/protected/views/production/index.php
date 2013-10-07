@@ -1,150 +1,106 @@
-<style>
-    pre {
-        border: none;
-        margin: 0;
-        padding: 0;
-        background: none;
-        font-size: 10px;
-        font-family: Arial, sans-serif;
-        line-height: normal;
-    }
+<div id="page" data-bind="css: {'no-sidebar': !hasSidebar()}">
+<aside>
+    <a href="#" class="btn btn-success btn-new-order" id="btn_new_order"
+       data-bind="click: new_order_click, css: {'disabled': init_loading}">Новый заказ</a>
 
-    .orange {
-        color: #ffd704 !important;
-    }
-
-    .none {
-        display: none !important;
-
-    }
-
-    .normal {
-        display: block;
-    }
-
-    td {
-        position: relative;
-    }
-
-    .dateBtn {
-        float: right;
-        margin-top: -16px !important;
-    }
-
-    .dataModal {
-        display: none;
-        position: absolute;
-        background: #2a6d90;
-        border: 1px solid black;
-        z-index: 10000;
-        width: 300px;
-        text-align: center;
-    }
-
-    .dataModal button {
-        float: none !important;
-    }
-
-    .dateBtn:hover+.dataModal {
-        display: block;
-    }
-
-    .dataModal:hover {
-        display: block;
-    }
-</style>
-<div id="page">
-    <aside>
-        <a href="#" class="btn btn-success btn-new-order" id="btn_new_order"
-           data-bind="click: new_order_click, css: {'disabled': init_loading}">Новый заказ</a>
-
-        <section class="calendar-block">
-            <div id="calendar">
-                <div class="calendar-header">
-                    <a href="#" class="arrow-left icon-chevron-left"></a>
-                    <a href="#" class="arrow-right icon-chevron-right"></a>
-                    <span></span>
-                </div>
-                <div class="calendar-table">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th><span>Пн</span></th>
-                            <th><span>Вт</span></th>
-                            <th><span>Ср</span></th>
-                            <th><span>Чт</span></th>
-                            <th><span>Пт</span></th>
-                            <th><span>Сб</span></th>
-                            <th><span>Вс</span></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
+    <section class="calendar-block">
+        <div id="calendar">
+            <div class="calendar-header">
+                <a href="#" class="arrow-left icon-chevron-left"></a>
+                <a href="#" class="arrow-right icon-chevron-right"></a>
+                <span></span>
             </div>
-        </section>
+            <div class="calendar-table">
+                <table>
+                    <thead>
+                    <tr>
+                        <th><span>Пн</span></th>
+                        <th><span>Вт</span></th>
+                        <th><span>Ср</span></th>
+                        <th><span>Чт</span></th>
+                        <th><span>Пт</span></th>
+                        <th><span>Сб</span></th>
+                        <th><span>Вс</span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 
-        <section class="categories-block" data-bind="visible: active_page_tab() != 3">
-            <ul>
-                <li><a href="#">В работе</a></li>
-                <li><a href="#">Заказы на производство</a></li>
-                <li><a href="#">Наряды в металл</a></li>
-                <li><a href="#">Наряды в фанеру</a></li>
-                <li><a href="#">Наряды на сборку</a></li>
-                <li><a href="#">Наряды в брус</a></li>
-                <li><a href="#">Ведомости к отругзке</a></li>
-            </ul>
-        </section>
+    <section class="categories-block" data-bind="visible: active_page_tab() != 3">
+        <ul>
+            <li><a href="#">В работе</a></li>
+            <li><a href="#">Заказы на производство</a></li>
+            <li><a href="#">Наряды в металл</a></li>
+            <li><a href="#">Наряды в фанеру</a></li>
+            <li><a href="#">Наряды на сборку</a></li>
+            <li><a href="#">Наряды в брус</a></li>
+            <li><a href="#">Ведомости к отругзке</a></li>
+        </ul>
+    </section>
 
-    </aside>
+</aside>
 
-    <section id="content">
+<section id="content">
 
-        <div id="page_loader" data-bind="visible: init_loading"><img src="/img/loaders/1d_6.gif"></div>
+    <div id="page_loader" data-bind="visible: init_loading"><img src="/img/loaders/1d_6.gif"></div>
 
 
-        <header data-bind="visible: !init_loading() && (active_page_tab() == 2 || filtered_date_orders().length > 0)">
+    <header data-bind="visible: !init_loading() && (active_page_tab() == 2 || filtered_date_orders().length > 0)">
+        <div class="btn-group">
+            <button type="button" class="btn"
+                    data-bind="css: {'active': active_page_tab() == 1}, click: function(){change_tab(1);}">В работе
+            </button>
+            <button type="button" class="btn"
+                    data-bind="css: {'active': active_page_tab() == 2}, click: function(){change_tab(2);}">Сетевой
+                вид
+            </button>
+            <button type="button" class="btn"
+                    data-bind="css: {'active': active_page_tab() == 3}, click: function(){change_tab(3);}">На
+                рассмотрении
+            </button>
+        </div>
+        <button class="btn" data-bind="visible: active_page_tab() == 2, click: calculate_dates">Рассчитать</button>
+        <div class="right-buttons" style="margin-right: 30px;">
+            <button class="btn"
+                    data-bind="click: toggle_all, visible: filtered_orders().length > 0 && active_page_tab() != 2"><span
+                    class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>
+                Свернуть/Развернуть всё
+            </button>
             <div class="btn-group">
-                <button type="button" class="btn"
-                        data-bind="css: {'active': active_page_tab() == 1}, click: function(){change_tab(1);}">В работе
-                </button>
-                <button type="button" class="btn"
-                        data-bind="css: {'active': active_page_tab() == 2}, click: function(){change_tab(2);}">Сетевой
-                    вид
-                </button>
-                <button type="button" class="btn"
-                        data-bind="css: {'active': active_page_tab() == 3}, click: function(){change_tab(3);}">На
-                    рассмотрении
-                </button>
-            </div>
-            <button class="btn" data-bind="visible: active_page_tab() == 2, click: calculate_dates">Рассчитать</button>
-            <div class="right-buttons" style="margin-right: 30px;">
-                <button class="btn"
-                        data-bind="click: toggle_all, visible: filtered_orders().length > 0 && active_page_tab() != 2"><span
-                        class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>
-                    Свернуть/Развернуть всё
-                </button>
-                <div class="btn-group">
-                <button class="btn dropdown-toggle" data-toggle="dropdown" data-bind="visible: (active_page_tab() == 2 || filtered_orders().length > 0)"><span
+                <button class="btn dropdown-toggle" data-toggle="dropdown"
+                        data-bind="visible: (active_page_tab() == 2 || filtered_orders().length > 0)"><span
                         class="icon-print"></span>
-                    Печать</button>
-                    <ul class="dropdown-menu">
-                        <li><a class="printAllOrders">Выделить все</a></li>
-                        <li><a class="printAllOrders">Выбрать нужное</a></li>
-                        <li><a class="print">Печать выбранного</a></li>
-                    </ul>
-                </div>
-
-            </div>
-        </header>
-
-        <div id="calendar_tab" data-bind="visible: active_page_tab()==2 && !init_loading()">
-            <div id="full_calendar" data-bind="fullCalendar: calendar_events,visible: active_page_tab()==2">
+                    Печать
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="printAllOrders">Выделить все</a></li>
+                    <li><a class="printAllOrders">Выбрать нужное</a></li>
+                    <li><a class="print">Печать выбранного</a></li>
+                </ul>
             </div>
 
         </div>
-<form method="POST" action="/production/print" id="printForm">
+    </header>
+
+    <div id="calendar_tab" data-bind="visible: active_page_tab()==2 && !init_loading()">
+        <div class="calendar-summary-container">
+            <div class="row row-header">
+                <div class="cell cell-total"><span>Сумма отгруж. товара</span></div>
+                <div class="cell cell-average"><span>Ср. значение<span></div>
+            </div>
+            <div class="calendar-summary-rows">
+
+            </div>
+        </div>
+        <div id="full_calendar"
+             data-bind="fullCalendar: {events: calendar_events, eventClick: $root.edit_order_click}, visible: active_page_tab()==2">
+        </div>
+    </div>
+    <form method="POST" action="/production/print" id="printForm">
         <div data-bind="visible: active_page_tab() != 2">
             <div class="no-orders" data-bind="visible: !init_loading() && filtered_orders().length == 0">Нет заказов
             </div>
@@ -154,27 +110,32 @@
                     <header>
                         <table>
                             <tbody>
-                             <tr>
+                            <tr>
                                 <td class="cell-date">
                                     <button class="btn btn-mini btn-hide" data-bind="click: toggle_open"><span
                                             class="icon-minus-sign"></span></button>
                                     <button class="btn btn-mini btn-open" data-bind="click: toggle_open"><span
                                             class="icon-plus-sign"></span></button>
-                                    <span class="date"><span data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span><br><span class="day"
-                                                                                                         data-bind="text: shipping_date_day_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span>
+                                    <span class="date"><span
+                                            data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span><br><span
+                                            class="day"
+                                            data-bind="text: shipping_date_day_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span>
                                     <button class="dateBtn btn btn-mini"
                                             data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) == App.Helper.dateToStr(shipping_date())}"></button>
                                         <div class="dataModal">
                                             <span style="display: none" class="getId" data-bind="text: id"></span>
 
-                                            <span data-bind="text: 'Расчетная дата «' + App.Helper.dateToStr(fact_shipping_date()) + '», заменить?'"></span><br>
-                                                <button class="replaceIt btn btn-mini">Да</button>
+                                            <span
+                                                data-bind="text: 'Расчетная дата «' + App.Helper.dateToStr(fact_shipping_date()) + '», заменить?'"></span><br>
+                                            <button class="replaceIt btn btn-mini">Да</button>
                                         </div>
 
                                     </span>
-                                     </td>
-                                <td class="cell-name" data-bind="css: {'orange': App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date()), 'rev': App.Helper.dateToStr(fact_shipping_date())!=1}">
-                                    <span class="name">Заказ № <span data-bind="text: id" class="order_id"></span> от <span
+                                </td>
+                                <td class="cell-name"
+                                    data-bind="css: {'orange': App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date()), 'rev': App.Helper.dateToStr(fact_shipping_date())!=1}">
+                                    <span class="name">Заказ № <span data-bind="text: id"
+                                                                     class="order_id"></span> от <span
                                             data-bind="text: date_str" class="orderDate"></span></span>
 
                                     <div class="progress">
@@ -184,17 +145,21 @@
                                     </div>
                                 </td>
                                 <td class="cell-customer">
-									<span data-bind="text: customer_text, tooltip: {title: customer_tooltip, html: true}"></span>
-								</td>
+                                    <span
+                                        data-bind="text: customer_text, tooltip: {title: customer_tooltip, html: true}"></span>
+                                </td>
                                 <td class="cell-price" data-bind="text: App.Helper.formatMoney(price())"></td>
                                 <td class="cell-comment">
-                                    <span data-bind="text: install_text, tooltip: {title: install_tooltip, html: true }"></span>
+                                    <span
+                                        data-bind="text: install_text, tooltip: {title: install_tooltip, html: true }"></span>
                                 </td>
                                 <td class="cell-buttons">
                                     <div class="buttons">
                                         <button class="btn btn-mini" data-bind="click: $root.edit_order_click"><span
                                                 class="icon-edit"></span></button>
-                                        <button class="btn btn-mini btn-comment" data-bind="css: {'filled': comment().length > 0}"><span class="icon-info-sign"></span>
+                                        <button class="btn btn-mini btn-comment"
+                                                data-bind="css: {'filled': comment().length > 0}"><span
+                                                class="icon-info-sign"></span>
                                         </button>
 
                                         <div class="btn-group">
@@ -212,7 +177,8 @@
 
                                 </td>
                                 <td class="print-buttons" style="display: none; width: 100px;">
-                                    Напечатать? <input name="printArr[]" type="checkbox" class="checkPrint"  data-bind="value: id" />
+                                    Напечатать? <input name="printArr[]" type="checkbox" class="checkPrint"
+                                                       data-bind="value: id"/>
                                 </td>
                             </tr>
                             </tbody>
@@ -255,17 +221,16 @@
 
             </div>
         </div>
-</form>
-    </section>
+    </form>
+</section>
 
 </div>
 <? $this->renderPartial('_order_form'); ?>
 <? $this->renderPartial('_date_form'); ?>
 <?
-if (isset($_GET['done']))
-{
+if (isset($_GET['done'])) {
     $order = Order::model()->findByPk((int)$_GET['done']);
-    $this->renderPartial('_done_form',array('id'=>(int)$_GET['done'],'order'=>$order));
+    $this->renderPartial('_done_form', array('id' => (int)$_GET['done'], 'order' => $order));
 }
 ?>
 

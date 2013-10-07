@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `date` date NOT NULL,
   `shipping_date` date NOT NULL,
   `date_start` date NOT NULL,
+  `date_status` datetime NOT NULL,
   `fact_shipping_date` date NOT NULL,
   `division` int(11) NOT NULL,
   `worker` varchar(255) NOT NULL,

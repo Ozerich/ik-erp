@@ -113,3 +113,56 @@ body > header {
  }
 
 @import "pages/page_production";
+
+pre {
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  font-size: 10px;
+  font-family: Arial, sans-serif;
+  line-height: normal;
+}
+
+.orange {
+  color: #ffd704 !important;
+}
+
+.none {
+  display: none !important;
+}
+
+.normal {
+  display: block;
+}
+
+td {
+  position: relative; // WHAT THE FUCK ???????????
+}
+
+.dateBtn {
+  float: right;
+  margin-top: -16px !important;
+}
+
+.dataModal {
+  display: none;
+  position: absolute;
+  background: #2a6d90;
+  border: 1px solid black;
+  z-index: 10000;
+  width: 300px;
+  text-align: center;
+}
+
+.dataModal button {
+  float: none !important;
+}
+
+.dateBtn:hover+.dataModal {
+  display: block;
+}
+
+.dataModal:hover {
+  display: block;
+}

@@ -5,6 +5,20 @@
     text-align: center;
   }
 
+  #page {
+    &.no-sidebar {
+      aside {
+        display: none;
+      }
+      #content {
+        margin-left: 0;
+        header {
+          margin-left: 236px;
+        }
+      }
+    }
+  }
+
   aside {
     width: 218px;
     float: left;
@@ -155,13 +169,70 @@
 
     #calendar_tab {
       position: relative;
-      #full_calendar {
-      .fc-button{
-        line-height: 30px;
-        font-size: 30px;
-        margin: 0 5px 3px;
+
+      .calendar-summary-container {
+        float: right;
+        width: 180px;
+
+        .row {
+          margin-left: 0;
+          &.row-header {
+            height: 62px;
+            .cell {
+              span {
+                padding-top: 22px;
+                display: block;
+              }
+            }
+          }
+          .cell {
+            text-align: center;
+            font-weight: bold;
+            height: 100%;
+            border-bottom: 1px solid #999;
+          }
+          .cell-total {
+            width: 100px;
+            float: left;
+            border-right: 1px solid #999;
+          }
+          .cell-average {
+            width: 79px;
+            float: left;
+          }
+        }
+
+        .calendar-summary-rows {
+          .cell-total {
+            background: #e2ebff;
+          }
+          .cell-average {
+            background: #ffdcdf;
+          }
+        }
       }
 
+      #full_calendar {
+        margin-right: 200px;
+        .fc-content .fc-button {
+          line-height: 30px;
+          font-size: 30px;
+          margin: 0 5px 3px;
+        }
+
+        .fc-header-center {
+          padding-top: 6px;
+          h2 {
+            line-height: 28px;
+            font-size: 17px;
+            margin: 0 10px;
+            width: 120px;
+          }
+        }
+
+        td {
+          position: static;
+        }
 
         table tbody tr:nth-child(2n+1) td {
           background: #FCFCFC;
@@ -176,6 +247,7 @@
           background: #54A1E6;
           color: #fff;
           border: 1px solid #fff;
+          cursor: pointer;
         }
 
         .price-block {
@@ -255,15 +327,15 @@
               width: 320px;
               .editable-input {
                 width: 300px;
-				display: block;
-				textarea{
-					width: 300px;
-				}
+                display: block;
+                textarea {
+                  width: 300px;
+                }
               }
-			  .editable-buttons{
-			    margin-top: 5px;
-			    float: right;
-			  }
+              .editable-buttons {
+                margin-top: 5px;
+                float: right;
+              }
             }
 
             .dropdown-menu {
@@ -357,9 +429,9 @@
               min-width: 150px;
               width: 150px;
               max-width: 150px;
-			  span{
-			   cursor: pointer;
-			  }
+              span {
+                cursor: pointer;
+              }
             }
 
             &.cell-price {
@@ -372,7 +444,7 @@
 
             &.cell-comment {
               border-right: 0;
-              span{
+              span {
                 cursor: pointer;
               }
             }
