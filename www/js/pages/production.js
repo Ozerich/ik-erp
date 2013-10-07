@@ -363,7 +363,9 @@ function OrderFormViewModel() {
 
         $('input:checkbox').uniform();
 
-        wnd.modal();
+        wnd.modal({
+            backdrop: 'static'
+        });
     };
 
 
@@ -504,10 +506,10 @@ function PageViewModel() {
     this.active_page_tab = ko.observable(1);
     this.change_tab = function (tab) {
 
-        if(tab == 2){
+        if (tab == 2) {
             that.hasSidebar(false);
         }
-        else{
+        else {
             that.hasSidebar(true);
         }
 
@@ -781,7 +783,7 @@ function PageViewModel() {
         orderFormViewModel.open();
     };
 
-    this.updateCalendarSummary = function(){
+    this.updateCalendarSummary = function () {
         var $summary = $('.calendar-summary-container').find('.calendar-summary-rows').empty();
         $('.fc-week').each(function () {
             var days_count = 0, total = 0, average, height = $(this).height() - 2;
@@ -932,29 +934,23 @@ $(document).ready(function () {
             method: 'post',
             data: {
                 'id': id,
-                'date': date,
+                'date': date
             },
             beforeSend: function () {
             },
             success: function () {
                 location.reload()
-            },
-
+            }
         });
-        event.stopPropagation();
-        return false;
-    });
-
-    $(document).on('click', '#closeDateForm', function (event) {
-        $('#date_form').fadeOut();
         event.stopPropagation();
         return false;
     });
 
     $(document).on('keydown', function (e) {
         if (e.keyCode === 27) {
-            $('#closeForm').click();
-            $('.modal-footer input').click();
+            if ($('.modal:visible').length) {
+                $('.modal:visible').find('.close').trigger('click');
+            }
         }
     });
 
