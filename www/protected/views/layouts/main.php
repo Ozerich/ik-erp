@@ -11,14 +11,16 @@
 
     <link rel="icon" type="image/png" href="/img/favicon.png"/>
 
-    <title><?= !empty($this->pageTitle) ? $this->pageTitle : 'Система управления предприятием'?> – «Красивый город»</title>
+    <link rel="stylesheet" type="text/css" media="print" href="/css/print.css">
+
+    <title><?= !empty($this->pageTitle) ? $this->pageTitle : 'Система управления предприятием'?> – «Красивый
+        город»</title>
 
     <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap.min.css">
     <?php
-    if ($this->pageId == 'catalog')
-    {
-    ?>
-    <link rel="stylesheet" type="text/css" href="/css/catalog-tables.css">
+    if ($this->pageId == 'catalog') {
+        ?>
+        <link rel="stylesheet" type="text/css" href="/css/catalog-tables.css">
     <?php
     }
     ?>
@@ -60,12 +62,12 @@
 <body>
 <!--<![endif]-->
 
-<header>
+<header class="header">
     <nav>
         <ul>
             <li><a href="/production">Производство</a>
                 <ul>
-                    <li><a href="/production">В работе</a></li>
+                    <li><a href="/production">Производственный граффик</a></li>
                     <li><a href="/payments">Оплата труда</a></li>
                 </ul>
             </li>
@@ -81,7 +83,7 @@
     </div>
 </header>
 
-<div class="page-container" <?= !empty($this->pageId) ? 'id="page_'.$this->pageId.'"' : ''?>>
+<div class="page-container" <?= !empty($this->pageId) ? 'id="page_' . $this->pageId . '"' : ''?>>
     <?=$content?>
 </div>
 </body>

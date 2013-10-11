@@ -89,6 +89,12 @@
               border: 1px solid #f1f1f1;
             }
 
+            &.today-cell{
+              span{
+                border: 1px solid red;
+              }
+            }
+
             cursor: pointer;
             &:hover, &.selected {
               background: #54a1e6;
@@ -378,6 +384,11 @@
               }
 
               .date {
+				
+				.date-wr{
+					cursor: pointer;
+				}
+			  
                 line-height: normal;
                 padding-top: 3px;
                 display: block;
@@ -451,18 +462,11 @@
 
             &.cell-buttons {
               border-left: 0;
-              max-width: 70px;
-              min-width: 70px;
+              max-width: 120px;
+              min-width: 120px;
+              width: 120px;
               position: relative;
               text-align: right;
-
-              .buttons {
-              /*position: absolute;
-              right: 10px;
-              bottom: 10px;
-              z-index: 1009;
-              */
-              }
 
               input.editable {
                 position: absolute;

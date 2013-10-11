@@ -105,7 +105,11 @@ App.DataPoint = {
 
     CalculateDates: function (_month, _year, _callback, _errorCallback) {
         this._dataPointGate.Request('orders', 'CalculateDates', {month: _month, year: _year}, _callback, _errorCallback);
-    }
+    },
+	
+	UpdateShippingDate: function(_order_id, _date, _callback, _errorCallback){
+		this._dataPointGate.Request('orders', 'UpdateShippingDate', {order_id: _order_id, date: _date}, _callback, _errorCallback);
+	}
 
 
 };

@@ -7,7 +7,6 @@ function Order() {
 
 
     this.date = ko.observable();
-
     this.setDate = function (_date) {
         that.date(_date);
     };
@@ -30,6 +29,18 @@ function Order() {
     this.install_address = ko.observable();
     this.install_comment = ko.observable();
 
+    this.is_shipped = ko.observable(false);
+
+    this.sort_date = ko.computed(function () {
+        if (this.is_shipped()) {
+            return this.date_status();
+        }
+        else {
+            return this.shipping_date();
+        }
+    }, this);
+
+
     this.products = ko.observableArray();
 
     this.opened = ko.observable(false);
@@ -44,17 +55,19 @@ function Order() {
         return this.date().getDate() + ' ' + App.Helper.getMonthName(this.date());
     }, this);
 
+
     this.shipping_date_str = ko.computed(function () {
-        if (!this.shipping_date()) {
+        if (!this.sort_date()) {
             return ''
         }
-        return this.shipping_date().getDate() + ' ' + App.Helper.getMonthName(this.shipping_date());
+        return this.sort_date().getDate() + ' ' + App.Helper.getMonthName(this.sort_date());
     }, this);
+
     this.shipping_date_day_str = ko.computed(function () {
-        if (!this.shipping_date()) {
+        if (!this.sort_date()) {
             return ''
         }
-        return App.Helper.getWeekDayName(this.shipping_date());
+        return App.Helper.getWeekDayName(this.sort_date());
     }, this);
 
     this.division_text = ko.computed(function () {
@@ -201,6 +214,7 @@ function OrderProduct() {
     }, this);
 
     this.count = ko.observable(1);
+    this.done = ko.observable(0);
     this.price = ko.observable(0);
     this.total = ko.computed(function () {
         if (this.product() == null) {
@@ -488,7 +502,8 @@ function PageViewModel() {
     var that = this;
 
     var today = new Date();
-    this.page_date = ko.observable(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
+    this.page_date = ko.observable(null);
+    this.page_month = ko.observable(new Date(today.getFullYear(), today.getMonth(), 1));
 
     this.hasSidebar = ko.observable(true);
 
@@ -573,13 +588,26 @@ function PageViewModel() {
     this.orders = ko.observableArray();
 
     this.filtered_date_orders = ko.computed(function () {
-        var date_start = new Date(that.page_date().getFullYear(), that.page_date().getMonth(), 1);
-        var date_end = new Date(that.page_date().getFullYear(), that.page_date().getMonth() + 1, 0);
+
+        var date_start, date_end;
+
+        if (that.page_date() !== null) {
+            date_start = new Date(that.page_date().getFullYear(), that.page_date().getMonth(), that.page_date().getDate());
+            date_end = new Date(that.page_date().getFullYear(), that.page_date().getMonth() + 1, 0);
+        }
+        else {
+            date_start = new Date(1970, 1, 1);
+            date_end = new Date(2900, 1, 1);
+            if (today.getMonth() != that.page_month().getMonth() || today.getFullYear() != that.page_month().getFullYear()) {
+                date_start = new Date(that.page_month().getFullYear(), that.page_month().getMonth(), 1);
+                date_end = new Date(that.page_month().getFullYear(), that.page_month().getMonth() + 1, 0);
+            }
+        }
 
         return ko.utils.arrayFilter(this.orders(),function (order) {
-            return order.date() <= date_end;
+            return order.sort_date() <= date_end && order.sort_date() >= date_start;
         }).sort(function (left, right) {
-                return left.date() < right.date() ? 1 : -1;
+                return left.sort_date() < right.sort_date() ? -1 : 1;
             });
 
     }, this);
@@ -587,13 +615,16 @@ function PageViewModel() {
     this.filtered_orders = ko.computed(function () {
         return ko.utils.arrayFilter(this.filtered_date_orders(), function (order) {
 
+            if (order.is_shipped() && (order.sort_date().getMonth() != that.page_month().getMonth() || order.sort_date().getFullYear() != that.page_month().getFullYear())) {
+                return false;
+            }
+
             if (that.active_page_tab() == 3) {
-                return order.status() == 0;
+                return order.is_shipped() == false && order.status() == 0;
             }
             else {
                 return order.status() > 0;
             }
-
         });
 
     }, this);
@@ -636,8 +667,14 @@ function PageViewModel() {
 
     this.calculate_dates = function () {
 
-        App.DataPoint.CalculateDates(this.calendar_date().getMonth() + 1, this.calendar_date().getFullYear(), function () {
-            that.load();
+        var calendar_date = $('#full_calendar').fullCalendar('getDate');
+
+        App.DataPoint.CalculateDates(calendar_date.getMonth() + 1, calendar_date.getFullYear(), function () {
+            that.load(function () {
+                setTimeout(function () {
+                    $('#full_calendar').fullCalendar('gotoDate', calendar_date.getFullYear(), calendar_date.getMonth(), 1);
+                }, 0);
+            });
         });
 
     };
@@ -659,6 +696,7 @@ function PageViewModel() {
     };
 
     this.change_status = function (order, status) {
+        if (status === 7)return;
         order.status(status);
         App.DataPoint.ChangeOrderStatus(order.id, status);
     };
@@ -683,7 +721,7 @@ function PageViewModel() {
     };
 
     this.init_loading = ko.observable(false);
-    this.load = function () {
+    this.load = function (callback) {
         this.init_loading(true);
 
         that.products_all = [];
@@ -715,11 +753,12 @@ function PageViewModel() {
                     model.customer_phone(order.customer_phone);
                     model.comment(order.comment);
                     model.worker(order.worker);
-                    model.need_install(order.need_install == 0 ? false : true);
+                    model.need_install(order.need_install != 0);
                     model.install_address(order.install_address);
                     model.install_comment(order.install_comment);
                     model.install_person(order.install_person);
                     model.install_phone(order.install_phone);
+                    model.is_shipped(order.is_shipped);
                     model.opened(false);
 
                     for (var j in order.products) {
@@ -730,6 +769,7 @@ function PageViewModel() {
                         order_product_model.id = parseInt(order_product.id);
                         order_product_model.product_id(order_product.product_id);
                         order_product_model.count(parseInt(order_product.count));
+                        order_product_model.done(parseInt(order_product.done));
                         order_product_model.comment(order_product.comment);
                         order_product_model.state_1(order_product.state_1 == 1);
                         order_product_model.state_2(order_product.state_2 == 1);
@@ -746,6 +786,10 @@ function PageViewModel() {
                         date: new Date(parseInt(date.substr(0, 4)), parseInt(date.substr(5, 2)) - 1, parseInt(date.substr(8, 2))),
                         cost: data.day_costs[date]
                     });
+                }
+
+                if (callback) {
+                    callback();
                 }
 
             });
@@ -812,6 +856,8 @@ $(function () {
 
     $('#calendar').Calendar(function (date) {
         pageViewModel.page_date(date);
+    }, function (month) {
+        pageViewModel.page_month(month);
     });
 
     $('[data-toggle=tooltip]').tooltip();
@@ -842,7 +888,7 @@ $(function () {
                 return false;
             }
 
-            day.find('.price-view').text(value + ' р.');
+            day.find('.price-view').text(App.Helper.formatMoney(value) + ' р.');
             pageViewModel.saveDateCost(day.data('date'), value);
 
             pageViewModel.updateCalendarSummary();

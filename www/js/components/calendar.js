@@ -1,6 +1,9 @@
-$.fn.Calendar = function (onSelect) {
+$.fn.Calendar = function (onSelect, onChangeMonth) {
 
     onSelect = onSelect || function () {
+    };
+	
+	onChangeMonth = onChangeMonth || function () {
     };
 
     var that = this;
@@ -10,8 +13,9 @@ $.fn.Calendar = function (onSelect) {
     var today = new Date();
     today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-    this.currentMonth = today.getMonth();
-    this.currentYear = today.getFullYear();
+    this.currentMonth = 0;
+    this.currentYear = 0;
+    this.currentDate = 0;
 
     var $btn_left = $(this).find('.arrow-left');
     var $btn_right = $(this).find('.arrow-right');
@@ -21,6 +25,10 @@ $.fn.Calendar = function (onSelect) {
     var updateMonth = function () {
 
         var i, j, html = '';
+		
+		onChangeMonth(new Date(that.currentYear, that.currentMonth, 1));
+		this.currentDate = 0;
+		onSelect(null);
 
         $header.text(monthNames[that.currentMonth] + ' ' + that.currentYear);
 
@@ -32,7 +40,7 @@ $.fn.Calendar = function (onSelect) {
             html += '<td class="empty"></td>';
         }
         for (j = 1, i = i + 1; i <= 7; i++, j++) {
-            html += '<td data-day="' + j + '"><span>' + j + '</span></td>';
+            html += '<td data-day="' + j  + (j == today.getDate() && that.currentMonth == today.getMonth() && that.currentYear == today.getFullYear() ? 'class="today-cell"' : '') + '"><span>' + j + '</span></td>';
         }
         html += '</tr>';
 
@@ -41,7 +49,7 @@ $.fn.Calendar = function (onSelect) {
                 html += '<tr>';
             }
 
-            html += '<td data-day="' + i + '"><span>' + i + '</span></td>';
+            html += '<td data-day="' + i + '" ' + (i == today.getDate() && that.currentMonth == today.getMonth() && that.currentYear == today.getFullYear() ? 'class="today-cell"' : '') + '><span>' + i + '</span></td>';
 
             if (j == 7) {
                 html += '</tr>';
@@ -91,16 +99,30 @@ $.fn.Calendar = function (onSelect) {
     });
 
     this.selectDate = function (date) {
-        this.currentMonth = date.getMonth();
-        this.currentYear = date.getFullYear();
+		
+		if(date && (date.getDate() != this.currentDate || date.getMonth() != this.currentMonth || date.getFullYear() != this.currentYear)){   
+			this.currentMonth = date.getMonth();
+			this.currentYear = date.getFullYear();
+			this.currentDate = date.getDate();
+			
+			$($content.find('td').not('.empty').get(this.currentDate - 1)).addClass('selected');
+			
+			updateMonth();
+			
+			$content.find('.day.selected').removeClass('selected');
+			$($content.find('td').not('.empty').get(this.currentDate - 1)).addClass('selected');
+					
+			onSelect(date);
+		}
+		else{
+			this.currentDate = 0;
+			$content.find('td').not('.empty').removeClass('selected');
+			onSelect(null);
+		}
 
-        updateMonth();
-
-        $content.find('.day.selected').removeClass('selected');
-        $($content.find('td').not('.empty').get(date.getDate() - 1)).addClass('selected');
-
-        onSelect(date);
     };
+
     this.selectDate(today);
+    this.selectDate(null);
 
 };

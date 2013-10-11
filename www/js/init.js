@@ -63,6 +63,17 @@ App.Helper = {
         }
         return this.to2(date.getDate()) + '.' + this.to2(date.getMonth() + 1) + '.' + date.getFullYear();
     },
+	
+	daysBeetween: function (date1, date2) {
+		var ONE_DAY = 1000 * 60 * 60 * 24;
+
+		var date1_ms = date1.getTime();
+		var date2_ms = date2.getTime();
+
+		var difference_ms = date1_ms - date2_ms;
+
+		return Math.round(difference_ms/ONE_DAY);
+	},
 
     getMonthName: function (date) {
         return this.MONTHS[date.getMonth()];

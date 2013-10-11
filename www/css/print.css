@@ -1,0 +1,7 @@
+.header{
+    display: none;
+}
+
+input[type=submit], button{
+    display: none;
+}

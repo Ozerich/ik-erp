@@ -110,18 +110,25 @@
                     <header>
                         <table>
                             <tbody>
-                            <tr>
-                                <td class="cell-date">
+                            <tr data-bind="css: {'red-line': App.Helper.daysBeetween(fact_shipping_date(), new Date()) < -7, 'gray-line': is_shipped()}">
+                                <td class="cell-date" data-bind="css: {'orange': fact_shipping_date().getMonth() != $root.page_month().getMonth() || fact_shipping_date().getFullYear() != $root.page_month().getFullYear(), 'rev': App.Helper.dateToStr(fact_shipping_date())!=1}">
                                     <button class="btn btn-mini btn-hide" data-bind="click: toggle_open"><span
                                             class="icon-minus-sign"></span></button>
                                     <button class="btn btn-mini btn-open" data-bind="click: toggle_open"><span
                                             class="icon-plus-sign"></span></button>
-                                    <span class="date"><span
-                                            data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span><br><span
-                                            class="day"
-                                            data-bind="text: shipping_date_day_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span>
-                                    <button class="dateBtn btn btn-mini"
-                                            data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) == App.Helper.dateToStr(shipping_date())}"></button>
+                                    <span class="date">
+									
+										<span class="date-wr" onclick="if($(this).parents('tr').hasClass('gray-line')) return;$(this).next().show().datepicker('show'); $(this).hide();">
+											<span data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span><br>
+											<span class="day" data-bind="text: shipping_date_day_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span>
+										</span>
+										
+										<input type="text" data-bind="datepicker: shipping_date, datepickerOptions: {onSelect: function(){App.DataPoint.UpdateShippingDate(id, $(this).datepicker('getDate')); $(this).trigger('change');}, onClose: function(){$(this).hide();$(this).prev().show();}}" style="display: none">
+										
+										
+										
+										<button class="dateBtn btn btn-mini"
+												data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) == App.Helper.dateToStr(shipping_date())}"></button>
                                         <div class="dataModal">
                                             <span style="display: none" class="getId" data-bind="text: id"></span>
 
@@ -132,8 +139,7 @@
 
                                     </span>
                                 </td>
-                                <td class="cell-name"
-                                    data-bind="css: {'orange': App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date()), 'rev': App.Helper.dateToStr(fact_shipping_date())!=1}">
+                                <td class="cell-name">
                                     <span class="name">Заказ № <span data-bind="text: id"
                                                                      class="order_id"></span> от <span
                                             data-bind="text: date_str" class="orderDate"></span></span>
@@ -167,7 +173,7 @@
                                                     class="icon-asterisk"></span></button>
                                             <ul class="dropdown-menu" data-bind="foreach: $root.statuses">
                                                 <li><a href="#"
-                                                       data-bind="text: name, value: id, css:{'selected': id == $parent.status()}, click: function(data){$root.change_status($parent, id);}"></a>
+                                                       data-bind="text: name, value: id, css:{'selected': 0 && id == $parent.status()}, click: function(data){$root.change_status($parent, id);}"></a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -190,7 +196,7 @@
                             <th class="cell-articul">Арт.</th>
                             <th class="cell-name">Наименование</th>
                             <th class="cell-count">Кол-во</th>
-                            <!--<th class="cell-count">Отгружено</th>-->
+                            <th class="cell-count">Отгружено</th>
                             <th class="cell-comment">Комментарии</th>
                             <th class="cell-status">Ф</th>
                             <th class="cell-status">М</th>
@@ -203,7 +209,7 @@
                             <td class="cell-articul" data-bind="text: product() ? product().articul : ''"></td>
                             <td class="cell-name" data-bind="text: product() ? product().name : ''"></td>
                             <td class="cell-count" data-bind="text: count"></td>
-                            <!--<td class="cell-count done">0</td>-->
+                            <td class="cell-count done" data-bind="text: done"></td>
                             <td class="cell-comment"><span
                                     data-bind="editable: comment, editableOptions: {name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveComment'}"></span>
                             </td>

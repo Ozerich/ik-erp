@@ -1,4 +1,8 @@
 <style>
+    form {
+        margin: 0;
+    }
+
     table.doneForm td {
         margin-top: 1px;
         border-top: 1px solid #378fb8;
@@ -23,10 +27,6 @@
     }
 
     table.orders tr.done td {
-        background: orange;
-    }
-
-    table.orders tr.donePart td {
         background: gray;
     }
 
@@ -60,112 +60,128 @@ $done = true;
 $maxDone = 0;
 $dateArr = array();
 foreach ($order->order_products as $item) {
-    if (OrdersDone::getDoneForProduct($item->order_id, $item->product_id) < $item->count)
+    foreach ($item->done as $i) {
+        if (!in_array($i->date, $dateArr)) {
+            $dateArr[] = $i->date;
+        }
+    }
+
+    if (OrdersDone::getDoneForProduct($item->order_id, $item->product_id) < $item->count) {
         $done = false;
+    }
+
     if ($maxDone < count($item->done)) {
         $maxDone = count($item->done);
-        $dateArr = array();
-        foreach ($item->done as $i)
-            $dateArr[] = $i->date;
     }
 }
+
+$done = $order->isShipped;
 ?>
 <div id="done_form" class="modal" role="dialog" style="display: none">
-    <table class="doneForm">
-        <tbody>
-        <tr>
-            <td class="cell-date" style="text-align: center">
+    <form method="POST">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Отрузка заказа №<?=$order->id?></h3>
+        </div>
+
+        <div class="row-fluid">
+
+            <table class="doneForm">
+                <tbody>
+                <tr>
+                    <td class="cell-date" style="text-align: center">
                 <span class="date"><span><?=$factDate?><br><?=$this->getMonthForTable($month)?></span><br><span
                         class="day"><?=$this->getDayForTable($week)?></span></span>
 
-            </td>
-            <td class="cell-name">
-                <span class="name">Заказ № <?=$order->id?> от <?=$date . " " . $this->getMonthForTable($month)?></span>
+                    </td>
+                    <td class="cell-name">
+                    <span class="name">Заказ № <?=$order->id?>
+                        от <?=$date . " " . $this->getMonthForTable($month)?></span>
 
-            </td>
-            <td class="cell-customer">
-                <span><?=$this->getDivision($order->division)?></span>
-            </td>
-            <td class="cell-price"><?=$price?></td>
-            <td class="cell-comment">
-                                    <span>
-                                        <?php
-                                        if ($order->need_install)
-                                            echo 'Монтаж: ' . $order->install_address;
-                                        else
-                                            echo 'Самовывоз';
-                                        ?>
-                                    </span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                    </td>
+                    <td class="cell-customer">
+                        <span><?=$this->getDivision($order->division)?></span>
+                    </td>
+                    <td class="cell-price"><?=$price?></td>
+                    <td class="cell-comment">
+                    <span>
+                        <?php
+                        if ($order->need_install)
+                            echo 'Монтаж: ' . $order->install_address;
+                        else
+                            echo 'Самовывоз';
+                        ?>
+                    </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-    <form method="POST">
-        <input type="hidden" name="order_id" value="<?= $order->id ?>">
-        <table class="orders">
-            <thead>
-            <tr>
-                <th class="cell-articul">Арт.</th>
-                <th class="cell-name">Наименование</th>
-                <th class="cell-count">Кол-во</th>
-                <?php
-                foreach ($dateArr as $date) {
-                    if ($date === date('d.m'))
-                        continue;
-                    echo '<th class="cell-count">Отгружено ' . $date . '</th>';
-                }
-                if (!$done)
-                    echo '<th class="cell-count">Отгрузить ' . date('d.m') . '</th>';
-                ?>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            foreach ($order->order_products as $item):
-                $doneCount = OrdersDone::getDoneForProduct($item->order_id, $item->product_id);
-                ?>
-                <tr<?=(($item->count == $doneCount) ? " class='done'" : (($doneCount > 0) ? " class='donePart'" : ""))?>>
-                    <td><?=$item->product->articul?></td>
-                    <td><?=$item->product->name?></td>
-                    <td><?=$item->count?></td>
+
+            <input type="hidden" name="order_id" value="<?= $order->id ?>">
+            <table class="orders">
+                <thead>
+                <tr>
+                    <th class="cell-articul">Арт.</th>
+                    <th class="cell-name">Наименование</th>
+                    <th class="cell-count">Кол-во</th>
                     <?php
                     foreach ($dateArr as $date) {
-                        if ($date === date('d.m'))
-                            continue;
-                        $hasDone = OrdersDone::model()->findByAttributes(array('date' => $date, 'order_id' => $order->id, 'product_id' => $item->product_id));
-                        if ($hasDone == NULL)
-                            $hasDone = 0;
-                        else
-                            $hasDone = $hasDone->done;
-                        echo '<td class="cell-count">' . $hasDone . '</td>';
+                        echo '<th class="cell-count">Отгружено ' . $date . '</th>';
                     }
-                    if (!$done) {
-                        $hasDone = OrdersDone::model()->findByAttributes(array('date' => date('d.m'), 'order_id' => $order->id, 'product_id' => $item->product_id));
-                        if ($hasDone == NULL)
-                            $hasDone = 0;
-                        else
-                            $hasDone = $hasDone->done;
-                        if ($item->count == $doneCount)
-                            echo '<td class="active cell-count"><input type="text" disabled="disabled" /></td>';
-                        else
-                            echo '<td class="active cell-count"><input type="text" name="doneArr[' . $item->product_id . ']" value="' . $hasDone . '" /></td>';
-                    }
+                    if (!$done)
+                        echo '<th class="cell-count">Отгрузить ' . date('d.m') . '</th>';
                     ?>
                 </tr>
-            <?php
-            endforeach;
-            ?>
+                </thead>
+                <tbody>
+                <?php
+                foreach ($order->order_products as $item):
+                    $doneCount = OrdersDone::getDoneForProduct($item->order_id, $item->product_id);
+                    ?>
+                    <tr<?=(($item->count <= $doneCount) ? " class='done'" : (($doneCount > 0) ? " class='donePart'" : ""))?>>
+                        <td><?=$item->product->articul?></td>
+                        <td><?=$item->product->name?></td>
+                        <td><?=$item->count?></td>
+                        <?php
+                        foreach ($dateArr as $date) {
+                            $hasDone = OrdersDone::model()->findByAttributes(array('date' => $date, 'order_id' => $order->id, 'product_id' => $item->product_id));
+                            if ($hasDone == NULL)
+                                $hasDone = 0;
+                            else
+                                $hasDone = $hasDone->done;
+                            echo '<td class="cell-count">' . $hasDone . '</td>';
+                        }
+                        if (!$done) {
+                            $hasDone = OrdersDone::model()->findByAttributes(array('date' => date('d.m'), 'order_id' => $order->id, 'product_id' => $item->product_id));
+                            if ($hasDone == NULL)
+                                $hasDone = 0;
+                            else
+                                $hasDone = $hasDone->done;
+                            if ($item->count <= $doneCount)
+                                echo '<td class="active cell-count"><input type="text" disabled="disabled" /></td>';
+                            else
+                                echo '<td class="active cell-count"><input type="text" name="doneArr[' . $item->product_id . ']" value="' . $hasDone . '" /></td>';
+                        }
+                        ?>
+                    </tr>
+                <?php
+                endforeach;
+                ?>
 
-            </tbody>
-        </table>
-        <div class="modal-footer">
-            <input type="submit" name="submit" class="btn btn-primary" value="Сохранить">
+                </tbody>
+            </table>
         </div>
+        <div class="modal-footer">
+
+            <input type="submit" name="submit" class="btn btn-primary" value="Отгрузить">
+            <button id="closeForm" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
+                Закрыть
+            </button>
+        </div>
+
     </form>
 </div>
 <script>
-    $(function () {
-        $('#done_form').modal();
-    })
+    $(function () {$('#done_form').modal();})
 </script>

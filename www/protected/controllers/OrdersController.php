@@ -17,10 +17,16 @@ class OrdersController extends Controller
                 $product = $order_product->attributes;
                 $product['product'] = $order_product->product->attributes;
 
+                $product['done'] = 0;
+                foreach ($order_product->done as $done) {
+                    $product['done'] += $done->done;
+                }
+
                 $products[] = $product;
             }
 
             $order['products'] = $products;
+            $order['is_shipped'] = $_order->isShipped;
 
             $result[] = $order;
         }
@@ -258,7 +264,7 @@ class OrdersController extends Controller
         $pk = Yii::app()->request->getPost('pk');
 
         $order = Order::model()->findByPk($pk);
-        if(!$order){
+        if (!$order) {
             throw new CHttpException(404);
         }
 
@@ -266,6 +272,24 @@ class OrdersController extends Controller
         $order->save();
 
         Yii::app()->end();
+    }
+
+
+    public function actionUpdateShippingDate()
+    {
+        $order_id = Yii::app()->request->getPost('order_id');
+        $date = Yii::app()->request->getPost('date');
+
+        $order = Order::model()->findByPk($order_id);
+        if (!$order) {
+            throw new CHttpException(404);
+        }
+
+        $order->shipping_date = $date;
+        $order->save();
+
+        Yii::app()->end();
+
     }
 }
 
