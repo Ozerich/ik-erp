@@ -291,5 +291,23 @@ class OrdersController extends Controller
         Yii::app()->end();
 
     }
+
+    public function actionDelete()
+    {
+        $order_id = Yii::app()->request->getPost('order_id');
+
+        $order = Order::model()->findByPk($order_id);
+        if (!$order) {
+            throw new CHttpException(404);
+        }
+
+        if ($order->status != 0) {
+            throw new CException("Ошибка доступа");
+        }
+
+        $order->delete();
+
+        Yii::app()->end();
+    }
 }
 

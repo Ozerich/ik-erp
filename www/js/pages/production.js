@@ -507,17 +507,6 @@ function PageViewModel() {
 
     this.hasSidebar = ko.observable(true);
 
-    /*this.statuses = [
-
-     {id: 1, name: 'В работе'},
-     {id: 2, name: 'Заказы на производство'},
-     {id: 3, name: 'Наряды в металл'},
-     {id: 4, name: 'Наряды в фанеру'},
-     {id: 5, name: 'Наряды на сборку'},
-     {id: 6, name: 'Наряды в брус'},
-     {id: 7, name: 'Отгрузка'}
-
-     ];*/
     this.active_page_tab = ko.observable(1);
     this.change_tab = function (tab) {
 
@@ -530,19 +519,6 @@ function PageViewModel() {
 
         this.active_page_tab(tab);
     };
-    this.statuses = [
-        //{id: (this.active_page_tab()==1)?0:1, name: (this.active_page_tab()==1)?'Отменить заказ':'В работе'},
-        {id: 0, name: 'Отменить заказ'},
-        {id: 1, name: 'В работе'},
-        {id: 2, name: 'Заказы на производство'},
-        {id: 3, name: 'Наряды в металл'},
-        {id: 4, name: 'Наряды в фанеру'},
-        {id: 5, name: 'Наряды на сборку'},
-        {id: 6, name: 'Наряды в брус'},
-        {id: 7, name: 'Отгрузка'}
-
-    ];
-
 
     this.date_costs = ko.observableArray();
 
@@ -718,6 +694,15 @@ function PageViewModel() {
             App.DataPoint.ChangeOrderProductState(data.id, 3, data.state_3());
         }
 
+    };
+
+    this.delete_order = function (order) {
+        if (!confirm('Вы уверены, что хотите удалить заказ?')) {
+            return false;
+        }
+
+        App.DataPoint.DeleteOrder(order.id);
+        that.orders.remove(order);
     };
 
     this.init_loading = ko.observable(false);
@@ -928,13 +913,6 @@ $(document).ready(function () {
 
     print.click(function () {
         $('#printForm').submit();
-    });
-
-    $(document).on('click', 'li:contains("Отгрузка")', function (event) {
-        var id = $(this).parent().parent().parent().parent().parent().find('.cell-name span.name span').html();
-        window.location = "/production/index/done/" + id;
-        event.stopPropagation();
-        return false;
     });
 
     $(document).on('click', '.dateBtn', function (event) {

@@ -91,6 +91,10 @@ App.DataPoint = {
         this._dataPointGate.Request('orders', 'Submit', _order, _callback, _errorCallback);
     },
 
+    DeleteOrder: function(_order_id, _callback, _errorCallback){
+        this._dataPointGate.Request('orders', 'Delete', {order_id: _order_id}, _callback, _errorCallback)
+    },
+
     ChangeOrderProductState: function (_order_product_id, _state, _value, _callback, _errorCallback) {
         this._dataPointGate.Request('orders', 'ChangeState', {order_product_id: _order_product_id, state: _state, value: _value}, _callback, _errorCallback);
     },
