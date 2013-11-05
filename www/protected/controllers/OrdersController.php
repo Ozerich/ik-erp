@@ -199,7 +199,7 @@ class OrdersController extends Controller
         $end_date = date('Y-m-d', mktime(0, 0, 0, $month + 1, 0, $year));
 
         $criteria = new CDbCriteria();
-        $criteria->order = 'date ASC';
+        $criteria->order = 'date ASC, status DESC';
 
         $orders = array();
         foreach (Order::model()->findAll($criteria) as $_order) {

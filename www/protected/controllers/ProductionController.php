@@ -38,7 +38,7 @@ class ProductionController extends Controller
             $id = Yii::app()->request->getPost('id');
             $order = Order::model()->findByPk($id);
             if ($order != NULL) {
-                $order->fact_shipping_date = $order->shipping_date;
+                $order->shipping_date = $order->fact_shipping_date;
                 $order->save();
             }
             Yii::app()->end();

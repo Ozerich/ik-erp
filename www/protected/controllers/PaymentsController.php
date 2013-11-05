@@ -39,7 +39,7 @@ class PaymentsController extends Controller
         $orders_all = Order::model()->findAll($criteria);
         $orders = array();
         foreach ($orders_all as $order) {
-            if (count($order->orders_done) > 0) {
+            if ($order->isShipped) {
                 $orders[] = $order;
             }
         }
