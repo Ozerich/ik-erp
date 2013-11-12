@@ -89,8 +89,8 @@
               border: 1px solid #f1f1f1;
             }
 
-            &.today-cell{
-              span{
+            &.today-cell {
+              span {
                 border: 1px solid red;
               }
             }
@@ -182,8 +182,13 @@
 
         .row {
           margin-left: 0;
+          text-align: center;
+          background: #fff;
+
           &.row-header {
-            height: 62px;
+            height: 32px;
+            margin-top: 43px;
+            background: #2a6d90;
             .cell {
               span {
                 padding-top: 22px;
@@ -191,21 +196,16 @@
               }
             }
           }
-          .cell {
-            text-align: center;
-            font-weight: bold;
-            height: 100%;
-            border-bottom: 1px solid #999;
+
+          span {
+            &:first-child {
+              margin-top: 30px;
+            }
+            display: block;
+            font-size: 14px;
+            margin-top: 10px;
           }
-          .cell-total {
-            width: 100px;
-            float: left;
-            border-right: 1px solid #999;
-          }
-          .cell-average {
-            width: 79px;
-            float: left;
-          }
+
         }
 
         .calendar-summary-rows {
@@ -219,11 +219,27 @@
       }
 
       #full_calendar {
-        margin-right: 200px;
+        margin-right: 180px;
+
+        .fc-first {
+          .fc-day-header {
+            background: #2a6d90;
+            height: 30px;
+            line-height: 30px;
+            font-size: 18px;
+            color: #fff;
+            font-weight: bold;
+          }
+        }
+
         .fc-content .fc-button {
           line-height: 30px;
           font-size: 30px;
           margin: 0 5px 3px;
+        }
+
+        .fc-day-number {
+          font-size: 30px;
         }
 
         .fc-header-center {
@@ -246,7 +262,8 @@
         table tbody tr:nth-child(2n) td {
           background: #f6f6f6;
         }
-        table tbody tr td.fc-state-highlight { //  background: #ffc;
+        table tbody tr td.fc-state-highlight {
+          //  background: #ffc;
         }
 
         .fc-event {
@@ -254,6 +271,14 @@
           color: #fff;
           border: 1px solid #fff;
           cursor: pointer;
+          .fc-event-title {
+            font-size: 13px;
+            line-height: 15px;
+            padding-left: 5px;
+            a {
+              color: #fff;
+            }
+          }
         }
 
         .price-block {
@@ -268,8 +293,8 @@
           display: block;
 
           .price-view {
-            color: #fff;
-            background: #2a6d90;
+            color: #000;
+            background: #fff;
             border: 1px solid #aaa;
             border-radius: 5px;
             text-align: center;
@@ -289,6 +314,10 @@
               padding: 1px 2px;
             }
           }
+
+          .order-edit {
+            display: none;
+          }
         }
       }
 
@@ -301,8 +330,13 @@
 
     header {
       margin-bottom: 13px;
+      .search-input{
+        display: inline-block;
+        margin-left: 15px;
+      }
       .right-buttons {
         float: right;
+        margin-right: 40px;
       }
     }
 
@@ -314,6 +348,18 @@
           border: 1px solid #215672;
           border-radius: 3px 3px 0 0;
           border-collapse: separate;
+          tr {
+            cursor: pointer;
+            &.selected {
+              td {
+                background: #28cd9f !important;
+                border: 1px solid green !important;
+                border-bottom: none !important;
+                &.cell-date {
+                }
+              }
+            }
+          }
           td {
             margin-top: 1px;
             border-top: 1px solid #378fb8;
@@ -363,13 +409,6 @@
               }
             }
 
-            &:first-child {
-              border-left: 0;
-            }
-            &:last-child {
-              border-right: 0;
-            }
-
             &.cell-date {
               width: 99px;
               max-width: 99px;
@@ -380,15 +419,15 @@
 
               button {
                 float: left;
-                margin-top: 4px;
+                margin-top: 3px;
               }
 
               .date {
-				
-				.date-wr{
-					cursor: pointer;
-				}
-			  
+
+                .date-wr {
+                  cursor: pointer;
+                }
+
                 line-height: normal;
                 padding-top: 3px;
                 display: block;
@@ -399,6 +438,25 @@
                   font-weight: normal;
                 }
               }
+
+              .dateModal {
+                display: none;
+                position: absolute;
+                background: #2a6d90;
+                border: 1px solid black;
+                z-index: 10000;
+                width: 300px;
+                text-align: center;
+                left: -66px;
+                top: 66px;
+                button {
+                  float: none !important;
+                }
+              }
+
+              &:hover .dateModal.need-show {
+                display: block;
+              }
             }
 
             &.cell-name {
@@ -406,16 +464,36 @@
               width: 236px;
               max-width: 350px;
 
+              .order_str-edit-container {
+                input {
+                  width: 100px;
+                  height: 20px;
+                  line-height: 20px;
+                  font-size: 12px;
+                }
+              }
+
+              .date {
+                display: block;
+                font-size: 10px;
+                line-height: 13px;
+                overflow: hidden;
+                .val {
+                  float: right;
+                }
+              }
+
               .name {
                 display: block;
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
+                font-size: 15px;
+                line-height: 20px;
               }
 
               .progress {
-                margin-top: 3px;
-                margin-bottom: 0;
+                margin: 3px 0;
                 overflow: hidden;
                 height: 14px;
                 width: 100%;
@@ -484,11 +562,16 @@
               }
             }
 
+            &.print-buttons {
+              width: 15px;
+            }
+
           }
+
         }
       }
 
-      >table {
+      > table {
         border-spacing: 1px;
         border-collapse: separate;
         background: #dddddd;
@@ -572,6 +655,65 @@
       }
     }
   }
+
+}
+
+table.products-table-list {
+  border-spacing: 1px;
+  border-collapse: separate;
+  background: #dddddd;
+  overflow: hidden;
+
+  .select2-container {
+    width: 100%;
+  }
+
+  th, td {
+    line-height: 16px;
+    padding: 5px 12px;
+
+    color: #333333;
+
+    &.cell-num {
+      max-width: 0;
+    }
+
+    &.cell-actions {
+      max-width: 15px;
+    }
+
+    &.cell-articul, &.cell-name {
+      max-width: 115px;
+    }
+
+    &.cell-count, &.cell-price {
+      max-width: 30px;
+      input {
+        text-align: center;
+      }
+    }
+
+    &.cell-price, &.cell-amount {
+      max-width: 50px;
+      text-align: center;
+    }
+    &.cell-comment {
+      textarea {
+        height: 50px;
+        min-height: 0;
+        resize: none;
+      }
+    }
+  }
+
+  th {
+    background: #cdcdcd;
+  }
+
+  td {
+    background: #ffffff;
+  }
+
 }
 
 #order_form {
@@ -585,7 +727,7 @@
   }
 
   .row-fluid {
-    max-height: 500px;
+    max-height: 510px;
     overflow-y: auto;
   }
   .nav-tabs {
@@ -606,73 +748,149 @@
     padding-left: 10px;
     padding-right: 10px;
 
+    .order-footer {
+      .total-amount {
+        float: left;
+        line-height: 25px;
+      }
+    }
+
     .table-wr {
       max-height: 334px;
       overflow-y: auto;
       margin-top: 10px;
     }
 
-    table {
-      border-spacing: 1px;
-      border-collapse: separate;
-      background: #dddddd;
-      overflow: hidden;
-
-      .select2-container {
-        width: 100%;
-      }
-
-      th, td {
-        line-height: 16px;
-        padding: 5px 12px;
-
-        color: #333333;
-
-        &.cell-num {
-          max-width: 0;
-        }
-
-        &.cell-actions {
-          max-width: 15px;
-        }
-
-        &.cell-articul, &.cell-name {
-          max-width: 115px;
-        }
-
-        &.cell-count, &.cell-price {
-          max-width: 30px;
-          input {
-            text-align: center;
-          }
-        }
-
-        &.cell-price, &.cell-amount {
-          max-width: 50px;
-          text-align: center;
-        }
-        &.cell-comment {
-          textarea {
-            height: 50px;
-            min-height: 0;
-            resize: none;
-          }
-        }
-      }
-
-      th {
-        background: #cdcdcd;
-      }
-
-      td {
-        background: #ffffff;
-      }
-
-    }
-
     .btn-add-production {
       float: right;
       margin: 10px 0;
+    }
+  }
+
+  /* accordion */
+  .accordion {
+    border-right: 1px solid #DDD;
+    border-left: 1px solid #DDD;
+  }
+  .ui-accordion .ui-accordion-header {
+    background-color: #F1F1F1;
+    padding: 8px 10px 8px 30px;
+    font-size: 12px;
+    color: #40516b;
+    font-weight: bold;
+    border: 0px;
+    border-bottom: 1px solid #DDD;
+    border-top: 1px solid #FFF;
+    text-shadow: 1px 1px 0px #FFF;
+  }
+  .ui-accordion .ui-state-hover {
+    background-color: #EEE;
+  }
+  .ui-accordion .ui-widget-content {
+    padding: 10px 5px;
+    background: #FFF;
+  }
+  .ui-accordion .ui-widget-content:last-child {
+    box-shadow: none;
+  }
+  .ui-accordion .ui-accordion-header:first-child {
+    border-top: 0px;
+  }
+  .ui-accordion .ui-accordion-header:last-child {
+    border-bottom: 0px;
+    box-shadow: none;
+  }
+  /* eof accordion */
+}
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+
+  .orders-container{
+    @width: 1327px;
+    width: @width;
+    header{
+      width: @width;
+    }
+    article{
+      width: @width;
+      table.prices{
+        width: @width;
+        max-width: @width;
+      }
+    }
+  }
+
+  #page_production {
+    aside, .header {
+      display: none;
+    }
+    #content {
+      margin-left: 0;
+      > header {
+        display: none;
+      }
+
+      article {
+
+        header {
+
+          button, input, a {
+            display: none !important;
+          }
+
+          .progress {
+            display: none;
+          }
+
+          table {
+
+            tr, tr.selected {
+              td {
+                background: #eee !important;
+                border: 1px solid #000000 !important;
+                color: #000 !important;
+
+                &.cell-buttons, &.print-buttons {
+                  display: none;
+                }
+
+                &.cell-price {
+                  display: none;
+                }
+
+                &.cell-date {
+                  .date {
+                    margin-left: 0 !important;
+                  }
+                }
+
+              }
+            }
+          }
+        }
+
+        > table {
+          tr {
+            td {
+              background: #fff !important;
+              border: 1px solid #000000 !important;
+              color: #000 !important;
+
+
+              &.cell-status{
+                &.marked{
+                  background: #aaa !important;
+                }
+              }
+            }
+          }
+        }
+
+      }
+
     }
   }
 }

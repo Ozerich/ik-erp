@@ -68,4 +68,45 @@ class Order extends CActiveRecord
 
         return true;
     }
+
+    public function findOtherInCurrentMonth()
+    {
+        $date = $this->date;
+        $year = substr($date, 0, 4);
+        $month = substr($date, 5, 2);
+
+        $date_start = $year . "-" . $month . "-01";
+        $date_end = date("Y-m-d", mktime(0, 0, 0, (int)$month + 1, 0, $year));
+
+        $criteria = new CDbCriteria();
+        $criteria->addBetweenCondition('date', $date_start, $date_end);
+
+        if ($this->isNewRecord == false) {
+            $criteria->addNotInCondition('id', array($this->id));
+        }
+
+        return self::model()->findAll($criteria);
+    }
+
+    public function getNextOrder(){
+        $other = $this->findOtherInCurrentMonth();
+        $max_order = 0;
+
+        foreach ($other as $item) {
+            if ($item->order > $max_order) {
+                $max_order = $item->order;
+            }
+        }
+
+        return $max_order + 1;
+    }
+
+    public function beforeSave()
+    {
+        if ($this->isNewRecord) {
+            $this->order = 0;
+        }
+
+        return parent::beforeSave();
+    }
 }

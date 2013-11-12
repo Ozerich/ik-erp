@@ -103,7 +103,7 @@ class OrdersController extends Controller
             }
         }
 
-        echo json_encode(array('order_id' => $order->id, 'order_product_ids' => $order_product_ids));
+        echo json_encode(array('order_id' => $order->id, 'order_order' => $order->order, 'order_product_ids' => $order_product_ids));
         Yii::app()->end();
     }
 
@@ -160,9 +160,19 @@ class OrdersController extends Controller
             throw new CHttpException(404);
         }
 
+        if ($status == 0) {
+            $order->order = 0;
+        } else if ($order->status == 0) {
+            $order->order = $order->getNextOrder();
+        }
+
         $order->date_status = date('Y-m-d h:i:s');
         $order->status = $status;
         $order->save();
+
+        echo json_encode(array(
+            'order_order' => $order->order
+        ));
 
         Yii::app()->end();
     }
@@ -192,14 +202,11 @@ class OrdersController extends Controller
         $month = Yii::app()->request->getPost('month');
         $year = Yii::app()->request->getPost('year');
 
-        // $month = Yii::app()->request->getQuery('month');
-        //   $year = Yii::app()->request->getQuery('year');
-
         $start_date = date('Y-m-d', mktime(0, 0, 0, $month, 1, $year));
         $end_date = date('Y-m-d', mktime(0, 0, 0, $month + 1, 0, $year));
 
         $criteria = new CDbCriteria();
-        $criteria->order = 'date ASC, status DESC';
+        $criteria->order = 'status DESC, "order" ASC';
 
         $orders = array();
         foreach (Order::model()->findAll($criteria) as $_order) {
@@ -308,6 +315,83 @@ class OrdersController extends Controller
         $order->delete();
 
         Yii::app()->end();
+    }
+
+
+    public function actionToggleOrder()
+    {
+        $order_id = Yii::app()->request->getPost('order_id');
+
+        $order = Order::model()->findByPk($order_id);
+        if (!$order) {
+            throw new CHttpException(404);
+        }
+
+        $mode = Yii::app()->request->getPost('mode');
+
+        if ($mode != '1' && $mode != '-1') {
+            throw new CHttpException(404);
+        }
+
+        $other = null;
+
+        $other_all = $order->findOtherInCurrentMonth();
+        foreach ($other_all as $item) {
+
+            if ($mode == '1' && $item->order > $order->order && ($other == null || $item->order < $other->order)) {
+                $other = $item;
+            }
+
+            if ($mode == '-1' && $item->order < $order->order && ($other == null || $item->order > $other->order)) {
+                $other = $item;
+            }
+
+        }
+
+        if ($other) {
+
+            $t = $other->order;
+            $other->order = $order->order;
+            $order->order = $t;
+
+            $other->save();
+            $order->save();
+        }
+
+        $response = array(
+            'new_order' => $order->order,
+            'other_order_id' => $other ? $other->id : 0
+        );
+
+        echo json_encode($response);
+        Yii::app()->end();
+    }
+
+    public function actionChangeOrder()
+    {
+        $order_id = Yii::app()->request->getPost('order_id');
+
+        $model = Order::model()->findByPk($order_id);
+        if (!$model) {
+            throw new CHttpException(404);
+        }
+
+        $model->order = Yii::app()->request->getPost('order');
+        $model->date = Yii::app()->request->getPost('date');
+        $model->save();
+
+        Yii::app()->end();
+    }
+
+
+    public function actionProducts($id = 0){
+
+        $model = Order::model()->findByPk($id);
+        if (!$model) {
+            throw new CHttpException(404);
+        }
+
+        $this->renderPartial('//production/_order_products_modal_list', array('products' => $model->order_products));
     }
 }
 

@@ -113,7 +113,15 @@ App.DataPoint = {
 	
 	UpdateShippingDate: function(_order_id, _date, _callback, _errorCallback){
 		this._dataPointGate.Request('orders', 'UpdateShippingDate', {order_id: _order_id, date: _date}, _callback, _errorCallback);
-	}
+	},
+
+    ToggleOrderOrder: function(_order_id, _mode, _callback, _errorCallback){
+        this._dataPointGate.Request('orders', 'ToggleOrder', {order_id: _order_id, mode: _mode}, _callback, _errorCallback);
+    },
+
+    ChangeOrderOrder: function(_order_id, _order, _date, _callback, _errorCallback){
+        this._dataPointGate.Request('orders', 'ChangeOrder', {order_id: _order_id, order: _order, date: _date}, _callback, _errorCallback);
+    }
 
 
 };

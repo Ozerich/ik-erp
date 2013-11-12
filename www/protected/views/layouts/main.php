@@ -36,7 +36,7 @@
     <script src="/js/thirdparty/jquery/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="/js/thirdparty/jquery.uniform.min.js"></script>
     <script src="/js/thirdparty/bootstrap.min.js"></script>
-    <script src="/js/thirdparty/less-1.4.1.min.js"></script>
+    <script src="/js/thirdparty/less-1.5.0.min.js"></script>
     <script src="/js/thirdparty/jquery.maskedinput.min.js"></script>
     <script src="/js/thirdparty/xeditable.min.js"></script>
     <script src="/js/thirdparty/fullcalendar/fullcalendar-1.6.4.js"></script>

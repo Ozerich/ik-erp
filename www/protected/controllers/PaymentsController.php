@@ -6,6 +6,7 @@ class PaymentsController extends Controller
     {
         $this->pageTitle = 'Оплата труда';
         $this->pageId = 'production';
+
         if (isset($_GET['year'])) {
             $year = $_GET['year'];
         } else

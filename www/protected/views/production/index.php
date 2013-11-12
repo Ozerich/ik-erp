@@ -62,9 +62,12 @@
                 data-bind="css: {'active': active_page_tab() == 3}, click: function(){change_tab(3);}">На
             рассмотрении
         </button>
+
+        <input type="text" placeholder="Поиск" class="search-input" data-bind="value: search_keyword, visible: active_page_tab() == 1 || active_page_tab() == 3">
+
     </div>
     <button class="btn" data-bind="visible: active_page_tab() == 2, click: calculate_dates">Рассчитать</button>
-    <div class="right-buttons" style="margin-right: 30px;">
+    <div class="right-buttons">
         <button class="btn"
                 data-bind="click: toggle_all, visible: filtered_orders().length > 0 && active_page_tab() != 2"><span
                 class="icon-minus-sign"></span> <span class="icon-plus-sign"></span>
@@ -77,9 +80,12 @@
                 Печать
             </button>
             <ul class="dropdown-menu">
-                <li><a class="printAllOrders">Выделить все</a></li>
-                <li><a class="printAllOrders">Выбрать нужное</a></li>
-                <li><a class="print">Печать выбранного</a></li>
+                <li><a class="printAllOrders" data-bind="click: doPrint">Печать</a></li>
+                <li><a class="printAllOrders"
+                       data-bind="visible: print_mode() == 0, click: function(){$root.print_mode(1)}">Выборочная
+                        печать</a></li>
+                <li><a class="print" data-bind="visible: print_mode() == 1, click: function(){$root.print_mode(0);}">Отмена</a>
+                </li>
             </ul>
         </div>
 
@@ -89,15 +95,13 @@
 <div id="calendar_tab" data-bind="visible: active_page_tab()==2 && !init_loading()">
     <div class="calendar-summary-container">
         <div class="row row-header">
-            <div class="cell cell-total"><span>Сумма отгруж. товара</span></div>
-            <div class="cell cell-average"><span>Ср. значение<span></div>
         </div>
         <div class="calendar-summary-rows">
 
         </div>
     </div>
     <div id="full_calendar"
-         data-bind="fullCalendar: {events: calendar_events, eventClick: $root.edit_order_click}, visible: active_page_tab()==2">
+         data-bind="fullCalendar: {events: calendar_events}, visible: active_page_tab()==2">
     </div>
 </div>
 <form method="POST" action="/production/print" id="printForm">
@@ -106,11 +110,11 @@
         </div>
 
         <div class="orders-container" data-bind="visible: !init_loading(), foreach: filtered_orders">
-            <article data-bind="css: {'opened': opened}">
+            <article data-bind="attr: {'data-id': id}, css: {'opened': opened}" class="order-article">
                 <header>
                     <table>
                         <tbody>
-                        <tr data-bind="css: {'red-line': App.Helper.daysBeetween(fact_shipping_date(), new Date()) < -7, 'gray-line': is_shipped()}">
+                        <tr data-bind="click: function(data, event){if(event.target.tagName != 'BUTTON' && event.target.tagName != 'A' && event.target.tagName != 'INPUT' && $(event.target).parents('button, a').length === 0)$root.select_order(data); return true;},css: {'selected': is_selected, 'red-line': App.Helper.daysBeetween(fact_shipping_date(), new Date()) < -7, 'gray-line': is_shipped(), 'orange-line': App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}">
                             <td class="cell-date"
                                 data-bind="css: {'orange': fact_shipping_date().getMonth() != $root.page_month().getMonth() || fact_shipping_date().getFullYear() != $root.page_month().getFullYear(), 'rev': App.Helper.dateToStr(fact_shipping_date())!=1}">
                                 <button class="btn btn-mini btn-hide" data-bind="click: toggle_open"><span
@@ -119,23 +123,17 @@
                                         class="icon-plus-sign"></span></button>
                                     <span class="date">
 									
-										<span class="date-wr"
-                                              onclick="if($(this).parents('tr').hasClass('gray-line')) return;$(this).next().show().datepicker('show'); $(this).hide();">
+										<span class="date-wr">
 											<span
-                                                data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span><br>
+                                                data-bind="text: shipping_date_str"></span><br>
 											<span class="day"
-                                                  data-bind="text: shipping_date_day_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}"></span>
+                                                  data-bind="text: shipping_date_day_str"></span>
 										</span>
-										
-										<input type="text"
-                                               data-bind="datepicker: shipping_date, datepickerOptions: {onSelect: function(){App.DataPoint.UpdateShippingDate(id, $(this).datepicker('getDate')); $(this).trigger('change');}, onClose: function(){$(this).hide();$(this).prev().show();}}"
-                                               style="display: none">
-										
-										
-										
-										<button class="dateBtn btn btn-mini"
-                                                data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) == App.Helper.dateToStr(shipping_date())}"></button>
-                                        <div class="dataModal">
+
+										<!--<button class="dateBtn btn btn-mini"
+                                                data-bind="text: shipping_date_str, css: {'none':App.Helper.dateToStr(fact_shipping_date()) == App.Helper.dateToStr(shipping_date())}"></button>-->
+                                        <div class="dateModal"
+                                             data-bind="css: {'need-show': is_shipped() == false && App.Helper.dateToStr(fact_shipping_date()) != App.Helper.dateToStr(shipping_date())}">
                                             <span style="display: none" class="getId" data-bind="text: id"></span>
 
                                             <span
@@ -146,9 +144,36 @@
                                     </span>
                             </td>
                             <td class="cell-name">
-                                    <span class="name">Заказ № <span data-bind="text: id"
-                                                                     class="order_id"></span> от <span
-                                            data-bind="text: date_str" class="orderDate"></span></span>
+
+                                <span class="name">
+
+                                    <span data-bind="visible: !order_str_edit_mode()" class="name">Заказ № <span
+                                            data-bind="text: id"></span> (<span
+                                            data-bind="text: order_str"
+                                            class="order_id"></span>)
+                                    <a href="#"
+                                       data-bind="click: function(data, event){$root.toggleOrderOrder(data, -1, event);}"
+                                       class="btn btn-mini"><span class="icon-arrow-up"></span></a>
+                                    <a href="#" data-bind="click: toggle_order_str_edit" class="btn btn-mini"><span
+                                            class="icon-certificate"></span></a>
+                                    <a href="#"
+                                       data-bind="click: function(data, event){$root.toggleOrderOrder(data, 1, event);}"
+                                       class="btn btn-mini"><span class="icon-arrow-down"></span></a>
+                                </span>
+
+                                <div class="order_str-edit-container" data-bind="visible: order_str_edit_mode">
+                                    <input type="text" data-bind="value: order_str" maxlength="9">
+                                    <a href="#"
+                                       data-bind="click: function(data, event){data.saveOrder($(event.target).parents('.order_str-edit-container').first().find('input').val())}"
+                                       class="btn btn-mini"><span class="icon-ok-sign"></span></a>
+                                    <a href="#" data-bind="click: toggle_order_str_edit" class="btn btn-mini"><span
+                                            class="icon-remove"></span></a>
+                                </div>
+
+                                <span class="date">Дата начала производства: <span class="val"
+                                                                                   data-bind="text: App.Helper.dateToStr(date())"></span></span>
+                                <span class="date">Рассчетная дата отгрузки: <span class="val"
+                                                                                   data-bind="text: App.Helper.dateToStr(fact_shipping_date())"></span></span>
 
                                 <div class="progress">
                                     <div class="progress-value"
@@ -165,10 +190,11 @@
                                     <span
                                         data-bind="text: install_text, tooltip: {title: install_tooltip, html: true }"></span>
                             </td>
-                            <td class="cell-buttons">
+                            <td class="cell-buttons" data-bind="visible: $root.print_mode() == 0">
                                 <div class="buttons">
 
-                                    <button class="btn btn-mini" data-bind="click: $root.edit_order_click">
+                                    <button class="btn btn-mini"
+                                            data-bind="click: $root.edit_order_click, visible: is_shipped() == false">
                                         <span class="icon-edit"></span>
                                     </button>
 
@@ -177,7 +203,7 @@
                                         <span class="icon-info-sign"></span>
                                     </button>
 
-                                    <div class="btn-group">
+                                    <div class="btn-group" data-bind="visible: is_shipped() == false">
                                         <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown"><span
                                                 class="icon-asterisk"></span></button>
 
@@ -185,13 +211,17 @@
                                             <li data-bind="visible: status() == 0"><a
                                                     data-bind="click: function($data){$root.change_status(this, 1);}"
                                                     href="#">В работу</a></li>
-                                            <li data-bind="visible: status() == 0"><a href="#" data-bind="click: $root.delete_order">Удалить заказ</a>
+                                            <li data-bind="visible: status() == 0"><a href="#"
+                                                                                      data-bind="click: $root.delete_order">Удалить
+                                                    заказ</a>
                                             </li>
                                             <li data-bind="visible: status() != 0"><a href="#"
                                                                                       data-bind="click: function($data){$root.change_status(this, 0);}">Отменить
                                                     заказ</a>
                                             </li>
-                                            <li data-bind="visible: status() != 0"><a href="#" data-bind="attr: {href: '/production/index/done/' + id}">Отгрузка</a></li>
+                                            <li data-bind="visible: status() != 0"><a href="#"
+                                                                                      data-bind="attr: {href: '/production/index/done/' + id}">Отгрузка</a>
+                                            </li>
                                             <!--<li><a href="#"
                                                    data-bind="text: name, value: id, css:{'selected': 0 && id == $parent.status()}, click: function(data){$root.change_status($parent, id);}"></a>
                                             </li>
@@ -204,9 +234,8 @@
                                        data-bind="editable: comment, editableOptions: {type: 'textarea', placement:'left', name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveOrderComment'}">
 
                             </td>
-                            <td class="print-buttons" style="display: none; width: 100px;">
-                                Напечатать? <input name="printArr[]" type="checkbox" class="checkPrint"
-                                                   data-bind="value: id"/>
+                            <td class="print-buttons" data-bind="visible: $root.print_mode() == 1">
+                                <input type="checkbox" data-bind="checked: need_print"/>
                             </td>
                         </tr>
                         </tbody>
@@ -236,11 +265,11 @@
                                 data-bind="editable: comment, editableOptions: {name: 'comment', emptytext:'&nbsp;', pk: id, url: '/orders/SaveComment'}"></span>
                         </td>
                         <td class="cell-status"
-                            data-bind="css:{'marked': state_1},click: function(data, event){$root.change_state(1, data)}"></td>
+                            data-bind="css:{'marked': state_1},click: function(data, event){if(data.is_shipped() == false)$root.change_state(1, data)}"></td>
                         <td class="cell-status"
-                            data-bind="css:{'marked': state_2},click: function(data, event){$root.change_state(2, data)}"></td>
+                            data-bind="css:{'marked': state_2},click: function(data, event){if(data.is_shipped() == false)$root.change_state(2, data)}"></td>
                         <td class="cell-status"
-                            data-bind="css:{'marked': state_3},click: function(data, event){$root.change_state(3, data)}"></td>
+                            data-bind="css:{'marked': state_3},click: function(data, event){if(data.is_shipped() == false)$root.change_state(3, data)}"></td>
                     </tr>
 
                     </tbody>
@@ -253,8 +282,12 @@
 </section>
 
 </div>
+
 <? $this->renderPartial('_order_form'); ?>
 <? $this->renderPartial('_date_form'); ?>
+<? $this->renderPartial('_order_products_modal'); ?>
+<? $this->renderPartial('_order_change_order_modal'); ?>
+
 <?
 if (isset($_GET['done'])) {
     $order = Order::model()->findByPk((int)$_GET['done']);

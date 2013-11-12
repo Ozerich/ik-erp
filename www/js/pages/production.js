@@ -5,11 +5,20 @@ function Order() {
 
     this.id = 0;
 
+    this.opened = ko.observable(false);
+    this.toggle_open = function () {
+        that.opened(!that.opened());
+    };
+
+    this.is_selected = ko.observable(false);
 
     this.date = ko.observable();
     this.setDate = function (_date) {
         that.date(_date);
     };
+
+
+    this.need_print = ko.observable(false);
 
     this.status = ko.observable();
     this.date_start = ko.observable();
@@ -31,7 +40,72 @@ function Order() {
 
     this.is_shipped = ko.observable(false);
 
+    this.order = ko.observable(0);
+    this.saveOrderNum = function (newOrder) {
+
+        var error = false;
+        if (newOrder.length != 9) {
+            error = true;
+        }
+        else {
+            var year = parseInt(newOrder.substr(0, 4));
+            if (!year || year < 2012 || year > 2020) {
+                error = true;
+            }
+            var month = parseInt(newOrder.substr(4, 2));
+            if (!month || month < 1 || month > 12) {
+                error = true;
+            }
+
+            var order = parseInt(newOrder.substr(6, 3));
+            if (!order || order === 0) {
+                error = true;
+            }
+        }
+
+        if (error) {
+            return false;
+        }
+
+        this.order(order);
+
+        var date = this.date();
+        this.date(new Date(year, month - 1, date.getDate()));
+
+        App.DataPoint.ChangeOrderOrder(this.id, order, year + '-' + (month < 10 ? '0' + month : month + '-' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate())));
+
+        return true;
+    };
+    this.saveOrder = function (newOrder) {
+        if (!this.saveOrderNum(newOrder)) {
+            alert("Неверный формат кода");
+        }
+        else {
+            this.toggle_order_str_edit();
+        }
+    };
+
+    this.order_str = ko.computed(function () {
+        if (!this.date()) {
+            return '';
+        }
+
+        var date = this.date();
+
+        var result = date.getFullYear();
+        result += (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1);
+        result += (this.order() < 10 ? '00' : (this.order() < 100 ? '0' : '')) + this.order();
+        return result;
+
+    }, this);
+
+    this.order_str_edit_mode = ko.observable(false);
+    this.toggle_order_str_edit = function () {
+        this.order_str_edit_mode(!this.order_str_edit_mode());
+    };
+
     this.sort_date = ko.computed(function () {
+        return this.date();
         if (this.is_shipped()) {
             return this.date_status();
         }
@@ -42,15 +116,18 @@ function Order() {
 
 
     this.products = ko.observableArray();
+    this.total_amount = ko.computed(function () {
+        var result = 0;
+        ko.utils.arrayForEach(that.products(), function (item) {
+            result += item.price() * item.count();
+        });
+        return result;
+    });
 
-    this.opened = ko.observable(false);
-    this.toggle_open = function () {
-        that.opened(!that.opened());
-    };
 
     this.date_str = ko.computed(function () {
         if (!this.date()) {
-            return ''
+            return '';
         }
         return this.date().getDate() + ' ' + App.Helper.getMonthName(this.date());
     }, this);
@@ -120,7 +197,7 @@ function Order() {
             }
         });
 
-        var result = Math.round(100 * sum / all);
+        var result = all == 0 ? 100 : Math.round(100 * sum / all);
         if (result == 100 && sum != all) {
             result = 99;
         }
@@ -144,16 +221,17 @@ function Order() {
 
     this.customer_tooltip = ko.computed(function () {
         var comment = this.comment();
-        return 'Телефон заказчика:' + this.customer_phone() + '<br>' +
-            'Комментарий:<pre>' + comment + '</pre>';
+        return 'Телефон заказчика: ' + this.customer_phone() + '<br>' +
+            'Ответственный: ' + this.worker() + '<br>' +
+            'Комментарий: <pre>' + comment + '</pre>';
     }, this);
 
     this.install_text = ko.computed(function () {
         if (this.need_install() == false) {
-            return 'Самовывоз';
+            return 'Без монтажа';
         }
         else {
-            return 'Монтаж: ' + this.install_address();
+            return 'Наш монтаж по адресу: ' + this.install_address();
         }
     }, this);
 
@@ -173,7 +251,9 @@ function Order() {
         var productsJSON = [];
 
         ko.utils.arrayForEach(this.products(), function (product) {
-            productsJSON.push(product.toJSON());
+            if (product.product_id() > 0) {
+                productsJSON.push(product.toJSON());
+            }
         });
 
         return {
@@ -278,15 +358,24 @@ function OrderFormViewModel() {
     this.install_phone = ko.observable();
     this.install_address = ko.observable();
     this.install_comment = ko.observable();
+    this.order = ko.observable();
 
     this.status = ko.observable();
 
-
     this.products = ko.observableArray([]);
+
+    this.total_amount = ko.computed(function () {
+        var result = 0;
+        ko.utils.arrayForEach(that.products(), function (item) {
+            result += item.price() * item.count();
+        });
+        return result;
+    });
 
     this.products_book = ko.observableArray([]);
     this.articuls_book = ko.computed(function () {
         var result = [];
+        result.push({id: 0, label: "Выберите артикул"});
         ko.utils.arrayForEach(this.products_book(), function (item) {
             result.push({id: item.id, label: item.articul});
         });
@@ -294,6 +383,7 @@ function OrderFormViewModel() {
     }, this);
     this.names_book = ko.computed(function () {
         var result = [];
+        result.push({id: 0, label: "Выберите продукт"});
         ko.utils.arrayForEach(this.products_book(), function (item) {
             result.push({id: item.id, label: item.name});
         });
@@ -329,6 +419,7 @@ function OrderFormViewModel() {
             this.install_phone('');
             this.status(0);
             this.products([]);
+            this.order(0);
         }
         else {
             this.id(order.id);
@@ -347,6 +438,7 @@ function OrderFormViewModel() {
             this.install_person(order.install_person());
             this.install_phone(order.install_phone());
             this.status(order.status());
+            this.order(order.order());
 
             this.products([]);
 
@@ -465,6 +557,8 @@ function OrderFormViewModel() {
                 var is_new_order = order.id == null;
 
                 order.id = parseInt(data.order_id);
+                order.order(data.order_order);
+
                 for (var j = 0; j < data.order_product_ids.length; j++) {
                     order.products()[j].id = data.order_product_ids[j];
                 }
@@ -520,6 +614,37 @@ function PageViewModel() {
         this.active_page_tab(tab);
     };
 
+
+    this.print_mode = ko.observable(0);
+
+    this.doPrint = function () {
+        this.select_order(null);
+
+        if (this.print_mode() == 1) {
+            var exceptions = [];
+            for (var i = 0; i < this.orders().length; i++) {
+                if (this.orders()[i].need_print() == false) {
+                    exceptions.push(this.orders()[i].id);
+                }
+            }
+
+            var $container = $('.orders-container');
+            for (var i = 0; i < exceptions.length; i++) {
+                $container.find('article[data-id=' + exceptions[i] + ']').hide();
+            }
+
+
+            window.print();
+
+            for (var i = 0; i < exceptions.length; i++) {
+                $container.find('article[data-id=' + exceptions[i] + ']').show();
+            }
+        }
+        else {
+            window.print();
+        }
+    };
+
     this.date_costs = ko.observableArray();
 
     this.saveDateCost = function (date, cost) {
@@ -561,7 +686,52 @@ function PageViewModel() {
         return 0;
     };
 
+    this.search_keyword = ko.observable('');
+
     this.orders = ko.observableArray();
+
+    this.findOrderById = function (id) {
+
+        for (var i = 0; i < this.orders().length; i++) {
+            if (this.orders()[i].id == id) {
+                return this.orders()[i];
+            }
+        }
+
+        return null;
+    };
+
+    this.select_order = function (order) {
+        ko.utils.arrayForEach(that.orders(), function (order) {
+            order.is_selected(false);
+        });
+        if (order) {
+            order.is_selected(true);
+        }
+    };
+
+    this.toggleOrderOrder = function (orderModel, mode, event) {
+        var $btn = $(event.target).prop('disabled', true);
+        App.DataPoint.ToggleOrderOrder(orderModel.id, mode, function (response) {
+
+            var other_order = null;
+            for (var i = 0; i < that.orders().length; i++) {
+                if (that.orders()[i].id == response.other_order_id) {
+                    other_order = that.orders()[i];
+                }
+            }
+
+            if (other_order) {
+                other_order.order(orderModel.order());
+            }
+
+            orderModel.order(response.new_order);
+
+
+            $btn.prop('disabled', false);
+        });
+
+    };
 
     this.filtered_date_orders = ko.computed(function () {
 
@@ -583,27 +753,53 @@ function PageViewModel() {
         return ko.utils.arrayFilter(this.orders(),function (order) {
             return order.sort_date() <= date_end && order.sort_date() >= date_start;
         }).sort(function (left, right) {
-                return left.sort_date() < right.sort_date() ? -1 : 1;
+                return +left.order() < +right.order() ? -1 : 1;
             });
 
     }, this);
 
     this.filtered_orders = ko.computed(function () {
-        return ko.utils.arrayFilter(this.filtered_date_orders(), function (order) {
+        return ko.utils.arrayFilter(that.filtered_date_orders(), function (order) {
 
             if (order.is_shipped() && (order.sort_date().getMonth() != that.page_month().getMonth() || order.sort_date().getFullYear() != that.page_month().getFullYear())) {
                 return false;
             }
 
             if (that.active_page_tab() == 3) {
-                return order.is_shipped() == false && order.status() == 0;
+                if (order.is_shipped() || order.status() > 0) {
+                    return false;
+                }
             }
             else {
-                return order.status() > 0;
+                if (order.status() == 0) {
+                    return false;
+                }
             }
-        });
 
-    }, this);
+            var search_keyword = that.search_keyword();
+            if (search_keyword.length > 0) {
+
+                if (order.customer().indexOf(search_keyword) !== -1) {
+                    return true;
+                }
+
+                if (order.worker().indexOf(search_keyword) !== -1) {
+                    return true;
+                }
+
+                for (var i = 0; i < order.products().length; i++) {
+                    var product = order.products()[i].product();
+                    if (product.name.indexOf(search_keyword) !== -1) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
+        }, this);
+    });
 
 
     this.calendar_events = ko.computed(function () {
@@ -624,12 +820,20 @@ function PageViewModel() {
             var end = order.fact_shipping_date();
             end = new Date(end.getFullYear(), end.getMonth(), end.getDate());
 
+            var color = '#54A1E6';
+            if (order.status() == 0) {
+                color = '#ADECAD';
+            }
+            else if (order.is_shipped()) {
+                color = '#aaa';
+            }
+
             result.push({
                 model: order,
-                title: 'Заказ № ' + order.id,
+                title: '<a data-id="' + order.id + '" href="#" class="fc-order-order">' + order.order() + '</a>, <a data-id="' + order.id + '" href="#" class="fc-order-num">Заказ № ' + order.id + '</a>, <a href="#" data-id="' + order.id + '" class="fc-order-amount">' + App.Helper.formatMoney(order.total_amount()) + ' р.</a>',
                 start: start,
                 end: end,
-                backgroundColor: order.status() == 0 ? '#aaa' : '#54A1E6'
+                backgroundColor: color
             });
         });
 
@@ -674,7 +878,10 @@ function PageViewModel() {
     this.change_status = function (order, status) {
         if (status === 7)return;
         order.status(status);
-        App.DataPoint.ChangeOrderStatus(order.id, status);
+
+        App.DataPoint.ChangeOrderStatus(order.id, status, function (response) {
+            order.order(response.order_order);
+        });
     };
 
     this.change_state = function (num, data) {
@@ -744,6 +951,8 @@ function PageViewModel() {
                     model.install_person(order.install_person);
                     model.install_phone(order.install_phone);
                     model.is_shipped(order.is_shipped);
+                    model.order(+order.order);
+
                     model.opened(false);
 
                     for (var j in order.products) {
@@ -815,15 +1024,15 @@ function PageViewModel() {
     this.updateCalendarSummary = function () {
         var $summary = $('.calendar-summary-container').find('.calendar-summary-rows').empty();
         $('.fc-week').each(function () {
-            var days_count = 0, total = 0, average, height = $(this).height() - 2;
+            var days_count = 0, total = 0, average, height = $(this).height();
             $(this).find('.fc-day').each(function () {
                 days_count++;
                 total += parseInt($(this).find('.price-view').text().replace(' ', ''));
             });
             average = Math.round(total / days_count);
-            $summary.append('<div class="row" style="line-height: ' + height + 'px;height: ' + height + 'px">' +
-                '<div class="cell cell-total">' + total + ' р.</div>' +
-                '<div class="cell cell-average">' + average + ' р.</div>' +
+            $summary.append('<div class="row" style="height: ' + height + 'px">' +
+                '<span>Сумма ' + App.Helper.formatMoney(total) + ' р.</span>' +
+                '<span>Средняя ' + App.Helper.formatMoney(average) + ' р.</span>' +
                 '</div>'
             );
         });
@@ -894,27 +1103,6 @@ $(function () {
 $(document).ready(function () {
     var orderForm = $('#order_form');
 
-
-    var printAll = $('.printAllOrders');
-    var printSelect = $('.printSelectOrders');
-    var print = $('.print');
-
-    printAll.click(function () {
-        $('.cell-buttons').fadeOut();
-        $('.checkPrint').attr('checked', 'checked');
-        $('.print-buttons').fadeIn();
-    });
-
-    printAll.click(function () {
-        $('.cell-buttons').fadeOut();
-        $('.checkPrint').attr('checked', 'checked');
-        $('.print-buttons').fadeIn();
-    });
-
-    print.click(function () {
-        $('#printForm').submit();
-    });
-
     $(document).on('click', '.dateBtn', function (event) {
         event.stopPropagation();
         return false;
@@ -933,7 +1121,6 @@ $(document).ready(function () {
             success: function () {
                 location.reload()
             }
-
         });
         event.stopPropagation();
         return false;
@@ -975,7 +1162,85 @@ $(document).ready(function () {
             if ($('.modal:visible').length) {
                 $('.modal:visible').find('.close').trigger('click');
             }
+
+            pageViewModel.select_order(null);
+            pageViewModel.print_mode(0);
         }
     });
 
+    $(document).on('click', function (e) {
+        var $target = $(e.target);
+        if ($target.parents('article.order-article').length === 0 && $target.is('article.order-article') == false) {
+            pageViewModel.select_order(null);
+        }
+    });
+
+
+    $(document).on('click', '.fc-order-order', function () {
+        var id = $(this).data('id');
+
+        var order = pageViewModel.findOrderById(id);
+        if (!order) {
+            return false;
+        }
+
+        var $wnd = $('#order_change_order_modal');
+
+        $wnd.find('h3 span').text(id);
+        $wnd.find('.order-order').val(order.order_str());
+        $wnd.modal({
+            backdrop: 'static'
+        });
+
+        return false;
+    });
+
+
+    $(document).on('click', '.fc-order-num', function () {
+        var id = $(this).data('id');
+
+        var order = pageViewModel.findOrderById(id);
+        if (!order) {
+            return false;
+        }
+
+        pageViewModel.edit_order_click(order);
+
+        return false;
+    });
+
+    $(document).on('click', '.fc-order-amount', function () {
+        var id = $(this).data('id');
+
+        var $wnd = $('#order_products_modal');
+        $wnd.data('modal', null);
+
+        $wnd.find('h3 span').text(id);
+
+        $wnd.modal({
+            remote: '/orders/products/id/' + id,
+            backdrop: 'static'
+        });
+    });
+
+    $('#order_change_order_modal').on('click', '.btn-primary', function () {
+        var $wnd = $('#order_change_order_modal');
+        var newOrder = $wnd.find('.order-order').val();
+
+        var id = $wnd.find('h3 span').text();
+        var order = pageViewModel.findOrderById(id);
+
+        if (!order) {
+            return false;
+        }
+
+        if (!order.saveOrderNum(newOrder)) {
+            alert("Неверный формат кода");
+        }
+        else {
+            $wnd.modal('hide');
+        }
+
+        return false;
+    });
 });

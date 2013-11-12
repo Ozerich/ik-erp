@@ -238,13 +238,18 @@ ko.bindingHandlers.fullCalendar = {
                     'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
                 timeFormat: '',
                 dayRender: function (date, cell) {
-                    $(cell).find('> div').prepend('<div class="price-block"><div class="price-edit"><input type="text" value="' + pageViewModel.getDateCost(date) + '"><a href="#" class="btn btn-mini btn-save"><i class="icon-ok"></i></a><a href="#" class="btn btn-mini btn-cancel"><i class="icon-remove"></i></a></div><div class="price-view">' + App.Helper.formatMoney(pageViewModel.getDateCost(date)) + 'р.</div></div>');
+                    $(cell).find('> div').prepend('<div class="price-block"><div class="order-edit"><input type="text" value=""><a href="#" class="btn btn-mini btn-save"><i class="icon-ok"></i></a><a href="#" class="btn btn-mini btn-cancel"><i class="icon-remove"></i></a></div><div class="price-edit"><input type="text" value="' + pageViewModel.getDateCost(date) + '"><a href="#" class="btn btn-mini btn-save"><i class="icon-ok"></i></a><a href="#" class="btn btn-mini btn-cancel"><i class="icon-remove"></i></a></div><div class="price-view">' + App.Helper.formatMoney(pageViewModel.getDateCost(date)) + 'р.</div></div>');
+                },
+                eventRender: function (event, element) {
+                    element.find('span.fc-event-title').html(element.find('span.fc-event-title').text());
                 },
                 eventAfterRender: function (event, element, view) {
-                    $(element).css('top', parseInt($(element).css('top')) + 20 + 'px');
+                    $(element).css('top', parseInt($(element).css('top')) + 'px');
                 },
                 eventClick: function (event, jsEvent, view) {
-                    valueAccessor().eventClick(event.model);
+                    if (valueAccessor().eventClick) {
+                        valueAccessor().eventClick(event.model);
+                    }
                 },
                 eventAfterAllRender: function () {
                     pageViewModel.updateCalendarSummary();

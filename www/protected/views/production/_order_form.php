@@ -6,14 +6,11 @@
     </div>
     <div class="row-fluid">
 
-        <!--        <ul class="nav nav-tabs">
-                    <li class="active"><a href="#order_params">Параметры</a></li>
-                    <li><a href="#order_install">Монтаж</a></li>
-                    <li><a href="#order_products">Продукция</a></li>
-                </ul>-->
 
-        <div class="tab-content">
-            <div class="tab-pane active" id="order_params">
+        <div class="accordion">
+            <h3>Параметры</h3>
+
+            <div id="order_params">
 
                 <div class="block-fluid">
                     <div class="row-form">
@@ -69,7 +66,9 @@
                 </div>
             </div>
 
-            <div class="tab-pane active" id="order_install">
+            <h3>Монтаж</h3>
+
+            <div id="order_install">
                 <div class="block-fluid">
                     <div class="row-form">
                         <div class="span4">Монтаж:</div>
@@ -109,9 +108,11 @@
 
             </div>
 
-            <div class="tab-pane active" id="order_products">
+            <h3>Продукты</h3>
+
+            <div id="order_products">
                 <div class="table-wr">
-                    <table>
+                    <table class="products-table-list">
                         <thead>
                         <tr>
                             <th class="cell-num">№</th>
@@ -159,19 +160,30 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="btn btn-mini btn-success btn-add-production" data-bind="click: add_production_click">
-                    Добавить продукцию
-                </button>
+                <div class="order-footer">
+                        <span class="total-amount">Сумма заказа: <b
+                                data-bind="text: App.Helper.formatMoney($root.total_amount()) + ' руб.'"></b></span>
+                    <button class="btn btn-mini btn-success btn-add-production"
+                            data-bind="click: add_production_click">
+                        Добавить продукцию
+                    </button>
+                </div>
             </div>
         </div>
+
 
     </div>
     <div class="modal-footer">
         <img src="/img/loaders/1d_2.gif" data-bind="visible: loading">
         <button class="btn btn-primary"
                 data-bind="visible: !loading(), click: submit_order, text: id() ? 'Сохранить' : 'Добавить заказ'"></button>
-        <button id="closeForm" class="btn btn-warning" data-bind="visible: !loading()" data-dismiss="modal" aria-hidden="true">
+        <button id="closeForm" class="btn btn-warning" data-bind="visible: !loading()" data-dismiss="modal"
+                aria-hidden="true">
             Закрыть
         </button>
     </div>
 </div>
+
+<script>
+    $('.accordion').accordion({heightStyle: "content"});
+</script>

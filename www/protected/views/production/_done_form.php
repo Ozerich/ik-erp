@@ -17,7 +17,8 @@
     table.orders {
         border-collapse: collapse;
         background: #dddddd;
-        margin-bottom: 12px;
+        width: 98%;
+        margin: 5px auto 12px;
     }
 
     table.orders td {
@@ -27,15 +28,15 @@
     }
 
     table.orders tr.done td {
-        background: gray;
+        color: #d3d3d3;
     }
 
-    table.orders td.active {
-        background: green;
+    table.orders tr.done input{
+        color: #000;
     }
 
     table.orders th {
-        border: 1px solid #fdfdfd;
+        border: 1px solid #cdcdcd;
         line-height: 26px;
         padding: 0 12px;
         color: #333333;
